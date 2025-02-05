@@ -3,20 +3,23 @@ import { Wallet, Coins, ArrowRight } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { TonConnectButton, useTonConnect, useTonWallet } from "@tonconnect/ui-react"
+import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react"
 import { Address, toNano } from 'ton-core'
 
 export default function HomePage() {
   const [isConnected, setIsConnected] = useState(false)
   const [isDepositing, setIsDepositing] = useState(false)
-  const { sender } = useTonConnect()
+  const { sender } = useTonConnectUI()
   const wallet = useTonWallet()
+
+  const userWallet = wallet?.account?.publicKey
+  const ownAddress = 'UQD-_aRcjLUFFaGUBh3qbmBkE8yX-6al0vBq_B6sTIaYkWsJ'
 
   const handleDeposit = async () => {
     try {
       setIsDepositing(true)
       
-      const receiverAddress = Address.parse('YOUR_WALLET_ADDRESS_HERE')
+      const receiverAddress = Address.parse(ownAddress)
       
       await sender.send({
         to: receiverAddress,
