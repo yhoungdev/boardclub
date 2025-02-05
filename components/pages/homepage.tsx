@@ -3,19 +3,33 @@ import { Wallet, Coins, ArrowRight } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { TonConnectButton } from "@tonconnect/ui-react"
+import { TonConnectButton, useTonConnect, useTonWallet } from "@tonconnect/ui-react"
+import { Address, toNano } from 'ton-core'
 
 export default function HomePage() {
   const [isConnected, setIsConnected] = useState(false)
   const [isDepositing, setIsDepositing] = useState(false)
-
-  const connectWallet = async () => {
-    setIsConnected(true)
-  }
+  const { sender } = useTonConnect()
+  const wallet = useTonWallet()
 
   const handleDeposit = async () => {
-    setIsDepositing(true)
-    setTimeout(() => setIsDepositing(false), 2000)
+    try {
+      setIsDepositing(true)
+      
+      const receiverAddress = Address.parse('YOUR_WALLET_ADDRESS_HERE')
+      
+      await sender.send({
+        to: receiverAddress,
+        value: toNano('1'), 
+        message: 'Boarding Club Entry Fee'
+      })
+      
+      setIsConnected(true)
+    } catch (error) {
+      console.error('Transaction failed:', error)
+    } finally {
+      setIsDepositing(false)
+    }
   }
 
   return (
@@ -34,14 +48,23 @@ export default function HomePage() {
             {!isConnected ? (
               <div className="space-y-4">
                 <div className="text-center">
-                  <span className="text-2xl font-bold">1 USDT</span>
-                  <p className="text-sm text-gray-400 mt-2">One-time deposit</p>
+                  <span className="text-2xl font-bold">1 TON</span>
+                  <p className="text-sm text-gray-400 mt-2">One-time entry fee</p>
                 </div>
-               <div>
-                <center>
-                  <TonConnectButton/>
-                </center>
-               </div>
+                <div>
+                  <center>
+                    <TonConnectButton/>
+                  </center>
+                </div>
+                {wallet && (
+                  <Button 
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
+                    onClick={handleDeposit}
+                    disabled={isDepositing}
+                  >
+                    {isDepositing ? "Processing Payment..." : "Pay Entry Fee"}
+                  </Button>
+                )}
               </div>
             ) : (
               <div className="space-y-4">
