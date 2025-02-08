@@ -9,22 +9,32 @@ import { Address, toNano } from 'ton-core'
 export default function HomePage() {
   const [isConnected, setIsConnected] = useState(false)
   const [isDepositing, setIsDepositing] = useState(false)
-  const { sender } = useTonConnectUI()
+  const [tonConnectUI] = useTonConnectUI()
   const wallet = useTonWallet()
 
   const userWallet = wallet?.account?.publicKey
   const ownAddress = 'UQD-_aRcjLUFFaGUBh3qbmBkE8yX-6al0vBq_B6sTIaYkWsJ'
 
   const handleDeposit = async () => {
+    if (!tonConnectUI) {
+      console.error('Wallet not connected')
+      return
+    }
+
     try {
       setIsDepositing(true)
       
       const receiverAddress = Address.parse(ownAddress)
       
-      await sender.send({
-        to: receiverAddress,
-        value: toNano('1'), 
-        message: 'Boarding Club Entry Fee'
+      await tonConnectUI.sendTransaction({
+        messages: [
+          {
+            address: receiverAddress,
+            amount: toNano('1').toString(),
+            payload: 'Boarding Club Entry Fee'
+          }
+        ],
+        validUntil: Date.now() + 5 * 60 * 1000
       })
       
       setIsConnected(true)
