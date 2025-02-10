@@ -26,6 +26,8 @@
     "@supabase/supabase-js": "^2.48.0",
     "@telegram-apps/sdk-react": "^2.0.25",
     "@tonconnect/ui-react": "^2.0.11",
+    "boring-avatar": "^1.7.0",
+    "boring-avatars": "^1.11.2",
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

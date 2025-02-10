@@ -3,7 +3,8 @@ import { Copy, Users } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { supabase } from "@/config/supabase" 
 
 interface Referral {
   id: number
@@ -20,7 +21,23 @@ const referrals: Referral[] = [
 
 export default function Profile() {
   const [copied, setCopied] = useState(false)
+  const [referrals, setReferrals] = useState<Referral[]>([])
   const referralUrl = "https://boardingclub.com/ref/mrtarahzad"
+
+  useEffect(() => {
+    const fetchReferrals = async () => {
+      const { data, error } = await supabase
+        .from('referrals')
+        .select('*')
+      if (error) {
+        console.error('Error fetching referrals:', error)
+      } else {
+        setReferrals(data)
+      }
+    }
+
+    fetchReferrals()
+  }, [])
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralUrl)
@@ -29,8 +46,8 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-4">
-      {/* Header */}
+    <div className="min-h-screen container bg-black text-white p-4">
+  
       <div className="flex items-center justify-between mb-6">
         <button className="text-sm text-gray-400">Back</button>
         <div className="flex items-center gap-1">
@@ -38,21 +55,21 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Profile Card */}
+ 
       <Card className="bg-gray-900/50 border-0 p-4 mb-6">
-        <div className="flex items-center gap-4">
+        <div className="flex text-center items-center justify-center flex-col gap-4">
           <Avatar className="h-16 w-16 border-2 border-purple-500">
             <AvatarImage src="/placeholder.svg?height=64&width=64" alt="MrTarahzad" />
             <AvatarFallback>MT</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h1 className="text-xl font-bold">MrTarahzad</h1>
+            <h1 className="text-xl font-bold text-white">MrTarahzad</h1>
             <p className="text-sm text-gray-400">Joined December 2023</p>
           </div>
         </div>
       </Card>
 
-      {/* Referral URL Card */}
+
       <Card className="bg-gray-900/50 border-0 p-4 mb-6">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
@@ -73,7 +90,6 @@ export default function Profile() {
         </div>
       </Card>
 
-      {/* Referrals List */}
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Users className="h-5 w-5 text-purple-500" />

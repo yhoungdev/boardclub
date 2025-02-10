@@ -3,6 +3,8 @@ import { Medal } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useState, useEffect } from "react"
+import { supabase } from "@/config/supabase" 
 
 interface User {
   id: number
@@ -10,22 +12,33 @@ interface User {
   coins: number
   earnsPerSec: number
   avatar: string
+  referrals: number
 }
 
-const topUsers: User[] = [
-  { id: 1, name: "Zain", coins: 153490751, earnsPerSec: 400, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 2, name: "Emerson", coins: 153490751, earnsPerSec: 89.2, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 3, name: "Emery", coins: 153490751, earnsPerSec: 75.6, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 4, name: "Kierra", coins: 153490751, earnsPerSec: 54.3, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 5, name: "Omar", coins: 153490751, earnsPerSec: 54.1, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 6, name: "Maria", coins: 153490751, earnsPerSec: 48.9, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 7, name: "Marcus", coins: 153490751, earnsPerSec: 400, avatar: "/placeholder.svg?height=40&width=40" },
-]
-
 export default function Leaderboard() {
+  const [topUsers, setTopUsers] = useState<User[]>([])
+
+  useEffect(() => {
+
+    const fetchUsers = async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .order('referrals', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching users:', error)
+      } else {
+        setTopUsers(data)
+      }
+    }
+
+    fetchUsers()
+  }, [])
+
   return (
-    <div className="min-h-screen bg-black text-white p-4">
-      {/* Header */}
+    <div className="min-h-screen container bg-black text-white p-4">
+
       <div className="flex items-center justify-between mb-6">
         <button className="text-sm text-gray-400">Back</button>
         <div className="flex items-center gap-1">
@@ -34,7 +47,7 @@ export default function Leaderboard() {
         </div>
       </div>
 
-      {/* Title Section */}
+  
       <div className="mb-6 flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold mb-1">LeaderBoard</h1>
