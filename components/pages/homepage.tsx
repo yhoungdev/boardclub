@@ -12,34 +12,35 @@ export default function HomePage() {
   const [tonConnectUI] = useTonConnectUI()
   const wallet = useTonWallet()
 
-  const userWallet = wallet?.account?.publicKey
-  const ownAddress = 'UQD-_aRcjLUFFaGUBh3qbmBkE8yX-6al0vBq_B6sTIaYkWsJ'
+  const userWallet = wallet?.account?.address 
+  const ownAddress = '0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7'
 
   const handleDeposit = async () => {
-    if (!tonConnectUI) {
-      console.error('Wallet not connected')
+    if (!tonConnectUI || !wallet || !wallet.account) {
+      console.error('❌ Wallet not connected or invalid')
       return
     }
 
     try {
       setIsDepositing(true)
-      
+
       const receiverAddress = Address.parse(ownAddress)
-      
+
       await tonConnectUI.sendTransaction({
+        validUntil: Math.floor(Date.now() / 1000) + 300, 
         messages: [
           {
-            address: receiverAddress,
-            amount: toNano('1').toString(),
-            payload: 'Boarding Club Entry Fee'
+            address: receiverAddress.toString(),
+            amount: toNano('1').toString(), 
+            stateInit: null, 
+            payload: '' 
           }
-        ],
-        validUntil: Date.now() + 5 * 60 * 1000
+        ]
       })
-      
+
       setIsConnected(true)
     } catch (error) {
-      console.error('Transaction failed:', error)
+      console.error('❌ Transaction failed:', error)
     } finally {
       setIsDepositing(false)
     }
@@ -53,7 +54,7 @@ export default function HomePage() {
             Welcome to Boarding Club
           </h1>
           <p className="text-gray-400">
-            Start your journey with just $1 USDT
+            Start your journey with just 1 TON
           </p>
         </div>
         <Card className="bg-gray-900/50 border-0 p-6">
@@ -83,7 +84,7 @@ export default function HomePage() {
               <div className="space-y-4">
                 <div className="p-4 rounded-lg bg-gray-800/50 text-center">
                   <div className="text-sm text-gray-400 mb-1">Amount to deposit</div>
-                  <span className="text-2xl font-bold">1 USDT</span>
+                  <span className="text-2xl font-bold">1 TON</span>
                 </div>
                 <Button 
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
@@ -104,7 +105,6 @@ export default function HomePage() {
           </div>
         </Card>
 
-        
         <div className="mt-8 text-center">
           <div className="flex items-center justify-center gap-2 text-gray-400">
             <Coins className="h-4 w-4" />
