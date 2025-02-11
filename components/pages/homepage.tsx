@@ -1,85 +1,86 @@
-"use client"
-import { useEffect } from "react"
-import { Wallet, Coins, ArrowRight } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react"
-import { Address, toNano } from 'ton-core'
-import { usePrivy } from '@privy-io/react-auth'
-import { FaTelegramPlane } from "react-icons/fa"
-import { useRouter } from 'next/navigation'
+"use client";
+import { useEffect } from "react";
+import { Wallet, Coins, ArrowRight } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import {
+  TonConnectButton,
+  useTonConnectUI,
+  useTonWallet,
+} from "@tonconnect/ui-react";
+import { Address, toNano } from "ton-core";
+import { usePrivy } from "@privy-io/react-auth";
+import { FaTelegramPlane } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
-  const router = useRouter()
-  const [isConnected, setIsConnected] = useState(false)
-  const [isDepositing, setIsDepositing] = useState(false)
-  const [tonConnectUI] = useTonConnectUI()
-  const wallet = useTonWallet()
-  const { login, user, authenticated, ready } = usePrivy()
+  const router = useRouter();
+  const [isConnected, setIsConnected] = useState(false);
+  const [isDepositing, setIsDepositing] = useState(false);
+  const [tonConnectUI] = useTonConnectUI();
+  const wallet = useTonWallet();
+  const { login, user, authenticated, ready } = usePrivy();
 
-  const userWallet = wallet?.account?.address 
-  const ownAddress = '0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7'
-
+  const userWallet = wallet?.account?.address;
+  const ownAddress = "0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7";
 
   useEffect(() => {
     if (ready && authenticated) {
-    
-      console.log('User authenticated:', user)
+      console.log("User authenticated:", user);
     }
-  }, [ready, authenticated, user])
+  }, [ready, authenticated, user]);
 
   const handleLogin = async () => {
     try {
-      await login()
+      await login();
     } catch (error) {
-      console.error('❌ Login failed:', error)
+      console.error("❌ Login failed:", error);
     }
-  }
+  };
 
   const handleDeposit = async () => {
     if (!authenticated) {
-      console.error('❌ User not authenticated')
-      return
+      console.error("❌ User not authenticated");
+      return;
     }
 
     if (!tonConnectUI || !wallet || !wallet.account) {
-      console.error('❌ Wallet not connected or invalid')
-      return
+      console.error("❌ Wallet not connected or invalid");
+      return;
     }
 
     try {
-      setIsDepositing(true)
+      setIsDepositing(true);
 
-      const receiverAddress = Address.parse(ownAddress)
+      const receiverAddress = Address.parse(ownAddress);
 
       await tonConnectUI.sendTransaction({
-        validUntil: Math.floor(Date.now() / 1000) + 300, 
+        validUntil: Math.floor(Date.now() / 1000) + 300,
         messages: [
           {
             address: receiverAddress.toString(),
-            amount: toNano('1').toString(), 
-            stateInit: null, 
-            payload: '' 
-          }
-        ]
-      })
+            amount: toNano("1").toString(),
+            stateInit: null,
+            payload: "",
+          },
+        ],
+      });
 
-      setIsConnected(true)
+      setIsConnected(true);
     } catch (error) {
-      console.error('❌ Transaction failed:', error)
+      console.error("❌ Transaction failed:", error);
     } finally {
-      setIsDepositing(false)
+      setIsDepositing(false);
     }
-  }
-
+  };
 
   if (!ready) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p>Loading...</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -89,14 +90,12 @@ export default function HomePage() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
             Welcome to Boarding Club
           </h1>
-          <p className="text-gray-400">
-            Start your journey with just 1 TON
-          </p>
+          <p className="text-gray-400">Start your journey with just 1 TON</p>
         </div>
         <Card className="bg-gray-900/50 border-0 p-6">
           <div className="space-y-6">
             {!authenticated ? (
-              <Button 
+              <Button
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white h-14"
                 onClick={handleLogin}
               >
@@ -107,15 +106,17 @@ export default function HomePage() {
               <div className="space-y-4">
                 <div className="text-center">
                   <span className="text-2xl font-bold">1 TON</span>
-                  <p className="text-sm text-gray-400 mt-2">One-time entry fee</p>
+                  <p className="text-sm text-gray-400 mt-2">
+                    One-time entry fee
+                  </p>
                 </div>
                 <div>
                   <center>
-                    <TonConnectButton/>
+                    <TonConnectButton />
                   </center>
                 </div>
                 {wallet && (
-                  <Button 
+                  <Button
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
                     onClick={handleDeposit}
                     disabled={isDepositing}
@@ -127,10 +128,12 @@ export default function HomePage() {
             ) : (
               <div className="space-y-4">
                 <div className="p-4 rounded-lg bg-gray-800/50 text-center">
-                  <div className="text-sm text-gray-400 mb-1">Amount to deposit</div>
+                  <div className="text-sm text-gray-400 mb-1">
+                    Amount to deposit
+                  </div>
                   <span className="text-2xl font-bold">1 TON</span>
                 </div>
-                <Button 
+                <Button
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
                   onClick={handleDeposit}
                   disabled={isDepositing}
@@ -157,5 +160,5 @@ export default function HomePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

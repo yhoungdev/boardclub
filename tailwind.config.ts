@@ -17,7 +17,7 @@ const config: Config = {
           sm: "2rem",
           lg: "6rem",
           xl: "8rem",
-        }
+        },
       },
       colors: {
         background: "hsl(var(--background))",

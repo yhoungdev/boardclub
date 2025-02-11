@@ -1,69 +1,69 @@
-"use client"
-import { Copy, Users } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useState, useEffect } from "react"
-import { supabase } from "@/config/supabase" 
-import { usePrivy } from "@privy-io/react-auth"
-import { useRouter } from 'next/navigation'
+"use client";
+import { Copy, Users } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState, useEffect } from "react";
+import { supabase } from "@/config/supabase";
+import { usePrivy } from "@privy-io/react-auth";
+import { useRouter } from "next/navigation";
 
 interface Referral {
-  id: number
-  name: string
-  joinedDate: string
-  avatar: string
+  id: number;
+  name: string;
+  joinedDate: string;
+  avatar: string;
 }
 
-
 export default function Profile() {
-  const router = useRouter()
-  const { user, authenticated, ready } = usePrivy()
-  const [copied, setCopied] = useState(false)
-  const [referrals, setReferrals] = useState<Referral[]>([])
+  const router = useRouter();
+  const { user, authenticated, ready } = usePrivy();
+  const [copied, setCopied] = useState(false);
+  const [referrals, setReferrals] = useState<Referral[]>([]);
 
   useEffect(() => {
     if (ready && !authenticated) {
-      router.push('/')
+      router.push("/");
     }
-  }, [ready, authenticated, router])
+  }, [ready, authenticated, router]);
 
-  const referralUrl = user ? `https://boardingclub.com/ref/${user.telegram?.username}` : ''
+  const referralUrl = user
+    ? `https://boardingclub.com/ref/${user.telegram?.username}`
+    : "";
 
   useEffect(() => {
     const fetchReferrals = async () => {
-      const { data, error } = await supabase
-        .from('referrals')
-        .select('*')
+      const { data, error } = await supabase.from("referrals").select("*");
       if (error) {
-        console.error('Error fetching referrals:', error)
+        console.error("Error fetching referrals:", error);
       } else {
-        setReferrals(data)
+        setReferrals(data);
       }
-    }
+    };
 
-    fetchReferrals()
-  }, [])
+    fetchReferrals();
+  }, []);
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(referralUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
+    navigator.clipboard.writeText(referralUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (!ready || !authenticated || !user) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p>Loading...</p>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen container bg-black text-white p-4">
       <div className="flex items-center justify-between mb-6">
-        <button className="text-sm text-gray-400" onClick={() => router.back()}>Back</button>
+        <button className="text-sm text-gray-400" onClick={() => router.back()}>
+          Back
+        </button>
         <div className="flex items-center gap-1">
           <button className="text-gray-400">•••</button>
         </div>
@@ -72,9 +72,11 @@ export default function Profile() {
       <Card className="bg-gray-900/50 border-0 p-4 mb-6">
         <div className="flex text-center items-center justify-center flex-col gap-4">
           <Avatar className="h-16 w-16 border-2 border-purple-500">
-            <AvatarImage 
-              src={user.telegram?.imageUrl || "/placeholder.svg?height=64&width=64"} 
-              alt={user.telegram?.username || "User"} 
+            <AvatarImage
+              src={
+                user.telegram?.imageUrl || "/placeholder.svg?height=64&width=64"
+              }
+              alt={user.telegram?.username || "User"}
             />
             <AvatarFallback>
               {user.telegram?.username?.[0]?.toUpperCase() || "U"}
@@ -95,9 +97,9 @@ export default function Profile() {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Your Referral Link</h2>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="text-purple-400 hover:text-purple-300"
               onClick={copyToClipboard}
             >
@@ -105,16 +107,16 @@ export default function Profile() {
               {copied ? "Copied!" : "Copy"}
             </Button>
           </div>
-          <div className="text-sm text-gray-400 break-all">
-            {referralUrl}
-          </div>
+          <div className="text-sm text-gray-400 break-all">{referralUrl}</div>
         </div>
       </Card>
 
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Users className="h-5 w-5 text-purple-500" />
-          <h2 className="text-sm font-semibold">Your Referrals ({referrals.length})</h2>
+          <h2 className="text-sm font-semibold">
+            Your Referrals ({referrals.length})
+          </h2>
         </div>
         <div className="space-y-3">
           {referrals.map((referral) => (
@@ -128,7 +130,8 @@ export default function Profile() {
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{referral.name}</span>
                     <span className="text-sm text-gray-400">
-                      Joined {new Date(referral.joinedDate).toLocaleDateString()}
+                      Joined{" "}
+                      {new Date(referral.joinedDate).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
@@ -138,5 +141,5 @@ export default function Profile() {
         </div>
       </div>
     </div>
-  )
+  );
 }
