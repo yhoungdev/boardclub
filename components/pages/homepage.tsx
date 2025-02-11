@@ -1,25 +1,48 @@
 "use client"
+import { useEffect } from "react"
 import { Wallet, Coins, ArrowRight } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react"
 import { Address, toNano } from 'ton-core'
-import {usePrivy} from '@privy-io/react-auth';
-import { FaTelegramPlane } from "react-icons/fa";
+import { usePrivy } from '@privy-io/react-auth'
+import { FaTelegramPlane } from "react-icons/fa"
+import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
+  const router = useRouter()
   const [isConnected, setIsConnected] = useState(false)
   const [isDepositing, setIsDepositing] = useState(false)
   const [tonConnectUI] = useTonConnectUI()
   const wallet = useTonWallet()
-  const {login } = usePrivy()
+  const { login, user, authenticated, ready } = usePrivy()
 
- 
   const userWallet = wallet?.account?.address 
   const ownAddress = '0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7'
 
+
+  useEffect(() => {
+    if (ready && authenticated) {
+    
+      console.log('User authenticated:', user)
+    }
+  }, [ready, authenticated, user])
+
+  const handleLogin = async () => {
+    try {
+      await login()
+    } catch (error) {
+      console.error('❌ Login failed:', error)
+    }
+  }
+
   const handleDeposit = async () => {
+    if (!authenticated) {
+      console.error('❌ User not authenticated')
+      return
+    }
+
     if (!tonConnectUI || !wallet || !wallet.account) {
       console.error('❌ Wallet not connected or invalid')
       return
@@ -50,6 +73,15 @@ export default function HomePage() {
     }
   }
 
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-md mx-auto p-4 pt-20">
@@ -63,7 +95,15 @@ export default function HomePage() {
         </div>
         <Card className="bg-gray-900/50 border-0 p-6">
           <div className="space-y-6">
-            {!isConnected ? (
+            {!authenticated ? (
+              <Button 
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white h-14"
+                onClick={handleLogin}
+              >
+                <FaTelegramPlane className="mr-2" />
+                Login with Telegram
+              </Button>
+            ) : !isConnected ? (
               <div className="space-y-4">
                 <div className="text-center">
                   <span className="text-2xl font-bold">1 TON</span>
@@ -116,11 +156,6 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-
-      <Button className="w-full bg-blue-500 w-fit px-2" onClick={login}>
-          <FaTelegramPlane color={"white"} />
-          Login with Telegram
-        </Button>
     </div>
   )
 }

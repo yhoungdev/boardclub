@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useState, useEffect } from "react"
 import { supabase } from "@/config/supabase" 
+import { usePrivy } from "@privy-io/react-auth"
+import { useRouter } from 'next/navigation'
 
 interface Referral {
   id: number
@@ -13,16 +15,20 @@ interface Referral {
   avatar: string
 }
 
-const referrals: Referral[] = [
-  { id: 1, name: "Zain", joinedDate: "2024-01-15", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 2, name: "Emerson", joinedDate: "2024-01-14", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 3, name: "Emery", joinedDate: "2024-01-13", avatar: "/placeholder.svg?height=40&width=40" },
-]
 
 export default function Profile() {
+  const router = useRouter()
+  const { user, authenticated, ready } = usePrivy()
   const [copied, setCopied] = useState(false)
   const [referrals, setReferrals] = useState<Referral[]>([])
-  const referralUrl = "https://boardingclub.com/ref/mrtarahzad"
+
+  useEffect(() => {
+    if (ready && !authenticated) {
+      router.push('/')
+    }
+  }, [ready, authenticated, router])
+
+  const referralUrl = user ? `https://boardingclub.com/ref/${user.telegram?.username}` : ''
 
   useEffect(() => {
     const fetchReferrals = async () => {
@@ -45,30 +51,45 @@ export default function Profile() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+
+  if (!ready || !authenticated || !user) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen container bg-black text-white p-4">
-  
       <div className="flex items-center justify-between mb-6">
-        <button className="text-sm text-gray-400">Back</button>
+        <button className="text-sm text-gray-400" onClick={() => router.back()}>Back</button>
         <div className="flex items-center gap-1">
           <button className="text-gray-400">•••</button>
         </div>
       </div>
 
- 
       <Card className="bg-gray-900/50 border-0 p-4 mb-6">
         <div className="flex text-center items-center justify-center flex-col gap-4">
           <Avatar className="h-16 w-16 border-2 border-purple-500">
-            <AvatarImage src="/placeholder.svg?height=64&width=64" alt="MrTarahzad" />
-            <AvatarFallback>MT</AvatarFallback>
+            <AvatarImage 
+              src={user.telegram?.imageUrl || "/placeholder.svg?height=64&width=64"} 
+              alt={user.telegram?.username || "User"} 
+            />
+            <AvatarFallback>
+              {user.telegram?.username?.[0]?.toUpperCase() || "U"}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-white">MrTarahzad</h1>
-            <p className="text-sm text-gray-400">Joined December 2023</p>
+            <h1 className="text-xl font-bold text-white">
+              {user.telegram?.username || "Anonymous User"}
+            </h1>
+            <p className="text-sm text-gray-400">
+              Joined {new Date(user.createdAt).toLocaleDateString()}
+            </p>
           </div>
         </div>
       </Card>
-
 
       <Card className="bg-gray-900/50 border-0 p-4 mb-6">
         <div className="flex flex-col gap-3">
