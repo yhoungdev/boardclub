@@ -5,13 +5,17 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react"
 import { Address, toNano } from 'ton-core'
+import {usePrivy} from '@privy-io/react-auth';
+import { FaTelegramPlane } from "react-icons/fa";
 
 export default function HomePage() {
   const [isConnected, setIsConnected] = useState(false)
   const [isDepositing, setIsDepositing] = useState(false)
   const [tonConnectUI] = useTonConnectUI()
   const wallet = useTonWallet()
+  const {login } = usePrivy()
 
+ 
   const userWallet = wallet?.account?.address 
   const ownAddress = '0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7'
 
@@ -112,6 +116,11 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      <Button className="w-full bg-blue-500 w-fit px-2" onClick={login}>
+          <FaTelegramPlane color={"white"} />
+          Login with Telegram
+        </Button>
     </div>
   )
 }
