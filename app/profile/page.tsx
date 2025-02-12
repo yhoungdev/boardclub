@@ -65,12 +65,24 @@ export default function Profile() {
     }
   }, [ready, authenticated, router]);
 
-  const url = typeof window !== "undefined" ? window.location.origin : "";
-  const referralUrl = `${url}/${user?.telegram?.username}`;
+
+  const url = typeof window !== 'undefined' ? window.location.origin : '';
+  const referralUrl = userData ? `${url}?ref=${userData.telegram_username}` : '';
 
   useEffect(() => {
     const fetchReferrals = async () => {
-      const { data, error } = await supabase.from("referrals").select("*");
+      if (!userData?.telegram_username) return;
+
+      const { data, error } = await supabase
+        .from("users")
+        .select(`
+          id,
+          telegram_username as name,
+          telegram_photo as avatar,
+          joined_at as joinedDate
+        `)
+        .eq('referred_by', userData.telegram_username);
+
       if (error) {
         console.error("Error fetching referrals:", error);
       } else {
@@ -78,8 +90,10 @@ export default function Profile() {
       }
     };
 
-    fetchReferrals();
-  }, []);
+    if (userData) {
+      fetchReferrals();
+    }
+  }, [userData]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralUrl);

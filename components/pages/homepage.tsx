@@ -43,6 +43,12 @@ export default function HomePage() {
     }
   };
 
+ 
+  const searchParams = new URLSearchParams(
+    typeof window !== 'undefined' ? window.location.search : ''
+  );
+  const referredBy = searchParams.get('ref');
+
   const saveUserToSupabase = async () => {
     try {
       const { data, error } = await supabase
@@ -56,8 +62,9 @@ export default function HomePage() {
             wallet_address: userWallet,
             joined_at: new Date().toISOString(),
             has_paid: true,
-            referal_url: refUrl,
+            referred_by: referredBy, 
             publicKey: wallet?.account?.publicKey,
+            referal_url: refUrl,
           },
         ])
         .select()

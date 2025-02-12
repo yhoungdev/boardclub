@@ -5,7 +5,7 @@ import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { ISPRODUCTION } from "@/constant";
 const IndexApplicationProvider = ({ children }: { children: ReactNode }) => {
   const manfiestUrl = ISPRODUCTION
-    ? "https://www.sigmart.xyz"
+    ? "https://boardclub.vercel.app"
     : "https://localhost:3000";
   return (
     <PrivyAuthProvider>
