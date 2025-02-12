@@ -63,7 +63,7 @@ export default function HomePage() {
             joined_at: new Date().toISOString(),
             has_paid: true,
             referred_by: referredBy, 
-            publicKey: wallet?.account?.publicKey,
+            // publicKey: wallet?.account?.publicKey,
             referal_url: refUrl,
           },
         ])
@@ -146,7 +146,7 @@ export default function HomePage() {
             ) : !isConnected ? (
               <div className="space-y-4">
                 <div className="text-center">
-                  <span className="text-2xl font-bold">1 TON</span>
+                  <span className="text-2xl font-bold text-white">$1</span>
                   <p className="text-sm text-gray-400 mt-2">
                     One-time entry fee
                   </p>
