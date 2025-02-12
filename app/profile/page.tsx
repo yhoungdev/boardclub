@@ -15,11 +15,49 @@ interface Referral {
   avatar: string;
 }
 
+interface UserData {
+  id: string;
+  telegram_username: string;
+  telegram_photo: string;
+  wallet_address: string;
+  joined_at: string;
+  has_paid: boolean;
+  referal_url: string;
+  publicKey: string;
+}
+
 export default function Profile() {
   const router = useRouter();
   const { user, authenticated, ready } = usePrivy();
   const [copied, setCopied] = useState(false);
   const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  // Fetch user data from Supabase
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user?.id) return;
+
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching user data:", error);
+        return;
+      }
+
+      if (data) {
+        setUserData(data);
+      }
+    };
+
+    if (authenticated && user) {
+      fetchUserData();
+    }
+  }, [authenticated, user]);
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -27,9 +65,8 @@ export default function Profile() {
     }
   }, [ready, authenticated, router]);
 
-  const referralUrl = user
-    ? `https://boardingclub.com/ref/${user.telegram?.username}`
-    : "";
+  const url = typeof window !== "undefined" ? window.location.origin : "";
+  const referralUrl = `${url}/${user?.telegram?.username}`;
 
   useEffect(() => {
     const fetchReferrals = async () => {
@@ -50,7 +87,7 @@ export default function Profile() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (!ready || !authenticated || !user) {
+  if (!ready || !authenticated || !user || !userData) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p>Loading...</p>
@@ -74,21 +111,27 @@ export default function Profile() {
           <Avatar className="h-16 w-16 border-2 border-purple-500">
             <AvatarImage
               src={
-                user.telegram?.imageUrl || "/placeholder.svg?height=64&width=64"
+                userData.telegram_photo || "/placeholder.svg?height=64&width=64"
               }
-              alt={user.telegram?.username || "User"}
+              alt={userData.telegram_username || "User"}
             />
             <AvatarFallback>
-              {user.telegram?.username?.[0]?.toUpperCase() || "U"}
+              {userData.telegram_username?.[0]?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <h1 className="text-xl font-bold text-white">
-              {user.telegram?.username || "Anonymous User"}
+              {userData.telegram_username || "Anonymous User"}
             </h1>
             <p className="text-sm text-gray-400">
-              Joined {new Date(user.createdAt).toLocaleDateString()}
+              Joined {new Date(userData.joined_at).toLocaleDateString()}
             </p>
+            {userData.wallet_address && (
+              <p className="text-xs text-gray-500 mt-1">
+                Wallet: {userData.wallet_address.slice(0, 6)}...
+                {userData.wallet_address.slice(-4)}
+              </p>
+            )}
           </div>
         </div>
       </Card>

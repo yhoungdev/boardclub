@@ -12,6 +12,7 @@ import {
 import { Address, toNano } from "ton-core";
 import { usePrivy } from "@privy-io/react-auth";
 import { FaTelegramPlane } from "react-icons/fa";
+import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
@@ -31,11 +32,42 @@ export default function HomePage() {
     }
   }, [ready, authenticated, user]);
 
+  const url = typeof window !== "undefined" ? window.location.origin : "";
+  const refUrl = `${url}/${user?.telegram?.username}`;
+
   const handleLogin = async () => {
     try {
       await login();
     } catch (error) {
       console.error("❌ Login failed:", error);
+    }
+  };
+
+  const saveUserToSupabase = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .insert([
+          {
+            id: user?.id,
+            telegram_username: user?.telegram?.username,
+            telegram_id: user?.telegram?.telegramUserId,
+            telegram_photo: user?.telegram?.photoUrl,
+            wallet_address: userWallet,
+            joined_at: new Date().toISOString(),
+            has_paid: true,
+            referal_url: refUrl,
+            publicKey: wallet?.account?.publicKey,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      router.push("/profile");
+    } catch (error) {
+      console.error("Error saving user:", error);
     }
   };
 
@@ -68,6 +100,8 @@ export default function HomePage() {
       });
 
       setIsConnected(true);
+
+      await saveUserToSupabase();
     } catch (error) {
       console.error("❌ Transaction failed:", error);
     } finally {
@@ -88,9 +122,9 @@ export default function HomePage() {
       <div className="max-w-md mx-auto p-4 pt-20">
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-            Welcome to Boarding Club
+            Welcome to Krytronite
           </h1>
-          <p className="text-gray-400">Start your journey with just 1 TON</p>
+          <p className="text-gray-400">Start your journey with just $1</p>
         </div>
         <Card className="bg-gray-900/50 border-0 p-6">
           <div className="space-y-6">
