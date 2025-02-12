@@ -68,7 +68,7 @@ export default function Leaderboard() {
             <div className="flex items-center gap-2">
               <span className="font-semibold">MrTarahzad</span>
               <span className="text-yellow-500">🪙</span>
-              <span>{topUsers[0].coins.toLocaleString()}</span>
+              <span>{topUsers[0]?.coins?.toLocaleString()}</span>
             </div>
             <div className="flex items-center gap-1 text-sm text-purple-400">
               <span className="font-semibold">12.3k</span>
@@ -107,7 +107,7 @@ export default function Leaderboard() {
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{user.name}</span>
                     <span className="text-yellow-500">
-                      🪙 {user.coins.toLocaleString()}
+                      🪙 {user?.coins?.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm text-gray-400">
