@@ -51,6 +51,25 @@ export default function HomePage() {
 
   const saveUserToSupabase = async () => {
     try {
+     
+      const { data: existingUser, error: fetchError } = await supabase
+        .from("users")
+        .select()
+        .eq('id', user?.id)
+        .single();
+    
+      if (fetchError && fetchError.code !== 'PGRST116') {
+      
+        throw fetchError;
+      }
+    
+      if (existingUser) {
+      
+        router.push("/profile");
+        return;
+      }
+    
+     
       const { data, error } = await supabase
         .from("users")
         .insert([
@@ -62,16 +81,15 @@ export default function HomePage() {
             wallet_address: userWallet,
             joined_at: new Date().toISOString(),
             has_paid: true,
-            referred_by: referredBy, 
-            // publicKey: wallet?.account?.publicKey,
+            referred_by: referredBy,
             referal_url: refUrl,
           },
         ])
         .select()
         .single();
-
+    
       if (error) throw error;
-
+    
       router.push("/profile");
     } catch (error) {
       console.error("Error saving user:", error);
