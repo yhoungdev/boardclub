@@ -37,22 +37,14 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen container bg-black text-white p-4">
-      <div className="flex items-center justify-between mb-6">
-        <button className="text-sm text-gray-400">Back</button>
-        <div className="flex items-center gap-1">
-          <span className="text-sm text-gray-400">bot</span>
-          <button className="text-gray-400">•••</button>
-        </div>
-      </div>
+      
 
       <div className="mb-6 flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold mb-1">LeaderBoard</h1>
-          <p className="text-sm text-gray-400">
-            Earn Coins Daily For Log In. Keep Your Streak To Earn More!
-          </p>
+         
         </div>
-        <Medal className="h-12 w-12 text-purple-500" />
+       
       </div>
 
       <Card className="bg-gray-900/50 border-0 p-4 mb-6">
@@ -78,20 +70,7 @@ export default function Leaderboard() {
         </div>
       </Card>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <Button
-          variant="outline"
-          className="bg-green-900/20 border-green-800 text-green-500 hover:bg-green-900/30 hover:text-green-400"
-        >
-          By Coin
-        </Button>
-        <Button
-          variant="outline"
-          className="bg-gray-900/20 border-gray-800 text-gray-400 hover:bg-gray-900/30 hover:text-gray-300"
-        >
-          By Referrals
-        </Button>
-      </div>
+      
 
       <div>
         <h2 className="text-sm font-semibold mb-4">TOP USER</h2>

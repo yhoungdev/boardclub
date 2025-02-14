@@ -15,8 +15,8 @@ const config: Config = {
         padding: {
           DEFAULT: "1rem",
           sm: "2rem",
-          lg: "6rem",
-          xl: "8rem",
+          lg: "20rem",
+          xl: "28rem",
         },
       },
       colors: {
