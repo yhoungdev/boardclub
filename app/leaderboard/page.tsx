@@ -47,7 +47,7 @@ export default function Leaderboard() {
        
       </div>
 
-      <Card className="bg-gray-900/50 border-0 p-4 mb-6">
+      {/* <Card className="bg-gray-900/50 border-0 p-4 mb-6">
         <div className="flex items-center gap-4">
           <Avatar className="h-12 w-12 border-2 border-purple-500">
             <AvatarImage
@@ -68,14 +68,14 @@ export default function Leaderboard() {
             </div>
           </div>
         </div>
-      </Card>
+      </Card> */}
 
       
 
       <div>
         <h2 className="text-sm font-semibold mb-4">TOP USER</h2>
         <div className="space-y-3">
-          {topUsers.map((user, index) => (
+          {topUsers?.map((user, index) => (
             <Card key={user.id} className="bg-gray-900/50 border-0 p-3">
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
