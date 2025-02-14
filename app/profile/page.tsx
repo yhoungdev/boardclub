@@ -111,14 +111,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen container bg-black text-white p-4">
-      <div className="flex items-center justify-between mb-6">
-        <button className="text-sm text-gray-400" onClick={() => router.back()}>
-          Back
-        </button>
-        <div className="flex items-center gap-1">
-          <button className="text-gray-400">•••</button>
-        </div>
-      </div>
+      
 
       <Card className="bg-gray-900/50 border-0 p-4 mb-6">
         <div className="flex text-center items-center justify-center flex-col gap-4">
