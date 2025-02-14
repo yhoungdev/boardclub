@@ -19,6 +19,7 @@ export default function HomePage() {
   const router = useRouter();
   const [isConnected, setIsConnected] = useState(false);
   const [isDepositing, setIsDepositing] = useState(false);
+  const [hasPaid, setHasPaid] = useState(false);
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const { login, user, authenticated, ready } = usePrivy();
@@ -27,10 +28,33 @@ export default function HomePage() {
   const ownAddress = "0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7";
 
   useEffect(() => {
-    if (ready && authenticated) {
-      console.log("User authenticated:", user);
-    }
-  }, [ready, authenticated, user]);
+    const checkPaymentStatus = async () => {
+      if (ready && authenticated && user?.id) {
+        try {
+          const { data: userData, error } = await supabase
+            .from("users")
+            .select("has_paid")
+            .eq('id', user.id)
+            .single();
+
+          if (error) throw error;
+
+          if (userData?.has_paid) {
+            setHasPaid(true);
+            router.refresh();
+          }
+        } catch (error) {
+          console.error("Error checking payment status:", error);
+        }
+      }
+    };
+
+    checkPaymentStatus();
+  }, [ready, authenticated, user?.id, router]);
+
+  if (ready && authenticated) {
+    console.log("User authenticated:", user);
+  }
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
   const refUrl = `${url}/${user?.telegram?.username}`;
@@ -138,6 +162,14 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (authenticated && hasPaid) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p>Redirecting...</p>
       </div>
     );
   }
