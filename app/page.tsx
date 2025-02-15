@@ -14,5 +14,5 @@ export default function Home() {
     );
   }
 
-  return authenticated ? <HomeIndex /> : <HomePage />;
+  return !authenticated ? <HomeIndex /> : <HomePage />;
 }
