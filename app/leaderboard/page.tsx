@@ -37,14 +37,10 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen container bg-black text-white p-4">
-      
-
       <div className="mb-6 flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold mb-1">LeaderBoard</h1>
-         
         </div>
-       
       </div>
 
       {/* <Card className="bg-gray-900/50 border-0 p-4 mb-6">
@@ -69,8 +65,6 @@ export default function Leaderboard() {
           </div>
         </div>
       </Card> */}
-
-      
 
       <div>
         <h2 className="text-sm font-semibold mb-4">TOP USER</h2>
