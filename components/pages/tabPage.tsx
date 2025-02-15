@@ -24,9 +24,8 @@ export default function HomeIndex() {
           </TabsTrigger>
         </TabsList>
 
-        
         <TabsContent value="home">
-          <CountDown/>
+          <CountDown />
         </TabsContent>
         <TabsContent value="profile">
           <Profile />

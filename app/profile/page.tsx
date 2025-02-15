@@ -65,9 +65,10 @@ export default function Profile() {
     }
   }, [ready, authenticated, router]);
 
-
-  const url = typeof window !== 'undefined' ? window.location.origin : '';
-  const referralUrl = userData ? `${url}?ref=${userData.telegram_username}` : '';
+  const url = typeof window !== "undefined" ? window.location.origin : "";
+  const referralUrl = userData
+    ? `${url}?ref=${userData.telegram_username}`
+    : "";
 
   useEffect(() => {
     const fetchReferrals = async () => {
@@ -75,13 +76,15 @@ export default function Profile() {
 
       const { data, error } = await supabase
         .from("users")
-        .select(`
+        .select(
+          `
           id,
           telegram_username as name,
           telegram_photo as avatar,
           joined_at as joinedDate
-        `)
-        .eq('referred_by', userData.telegram_username);
+        `,
+        )
+        .eq("referred_by", userData.telegram_username);
 
       if (error) {
         console.error("Error fetching referrals:", error);
@@ -111,8 +114,6 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen container bg-black text-white p-4">
-      
-
       <Card className="bg-gray-900/50 border-0 p-4 mb-6">
         <div className="flex text-center items-center justify-center flex-col gap-4">
           <Avatar className="h-16 w-16 border-2 border-purple-500">

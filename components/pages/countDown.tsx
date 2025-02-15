@@ -11,7 +11,6 @@ const CountDown = () => {
   });
 
   useEffect(() => {
-
     const targetDate = new Date();
     targetDate.setDate(targetDate.getDate() + 14);
 
@@ -27,7 +26,6 @@ const CountDown = () => {
           seconds: Math.floor((difference / 1000) % 60),
         });
       } else {
- 
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
@@ -47,25 +45,25 @@ const CountDown = () => {
         <div className="grid grid-cols-4 gap-4">
           <Card className="bg-gray-900/50 border-0 p-4">
             <div className="text-4xl font-bold text-purple-400">
-              {String(timeLeft.days).padStart(2, '0')}
+              {String(timeLeft.days).padStart(2, "0")}
             </div>
             <div className="text-sm text-gray-400">Days</div>
           </Card>
           <Card className="bg-gray-900/50 border-0 p-4">
             <div className="text-4xl font-bold text-purple-400">
-              {String(timeLeft.hours).padStart(2, '0')}
+              {String(timeLeft.hours).padStart(2, "0")}
             </div>
             <div className="text-sm text-gray-400">Hours</div>
           </Card>
           <Card className="bg-gray-900/50 border-0 p-4">
             <div className="text-4xl font-bold text-purple-400">
-              {String(timeLeft.minutes).padStart(2, '0')}
+              {String(timeLeft.minutes).padStart(2, "0")}
             </div>
             <div className="text-sm text-gray-400">Minutes</div>
           </Card>
           <Card className="bg-gray-900/50 border-0 p-4">
             <div className="text-4xl font-bold text-purple-400">
-              {String(timeLeft.seconds).padStart(2, '0')}
+              {String(timeLeft.seconds).padStart(2, "0")}
             </div>
             <div className="text-sm text-gray-400">Seconds</div>
           </Card>

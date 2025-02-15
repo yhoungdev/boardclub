@@ -14,8 +14,9 @@ import { usePrivy } from "@privy-io/react-auth";
 import { FaTelegramPlane } from "react-icons/fa";
 import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
+import Onboarding from "../onboarding";
 
-export default function HomePage() {
+export function AuthPage() {
   const router = useRouter();
   const [isConnected, setIsConnected] = useState(false);
   const [isDepositing, setIsDepositing] = useState(false);
@@ -34,7 +35,7 @@ export default function HomePage() {
           const { data: userData, error } = await supabase
             .from("users")
             .select("has_paid")
-            .eq('id', user.id)
+            .eq("id", user.id)
             .single();
 
           if (error) throw error;
@@ -67,33 +68,28 @@ export default function HomePage() {
     }
   };
 
- 
   const searchParams = new URLSearchParams(
-    typeof window !== 'undefined' ? window.location.search : ''
+    typeof window !== "undefined" ? window.location.search : "",
   );
-  const referredBy = searchParams.get('ref');
+  const referredBy = searchParams.get("ref");
 
   const saveUserToSupabase = async () => {
     try {
-     
       const { data: existingUser, error: fetchError } = await supabase
         .from("users")
         .select()
-        .eq('id', user?.id)
+        .eq("id", user?.id)
         .single();
-    
-      if (fetchError && fetchError.code !== 'PGRST116') {
-      
+
+      if (fetchError && fetchError.code !== "PGRST116") {
         throw fetchError;
       }
-    
+
       if (existingUser) {
-      
         router.push("/profile");
         return;
       }
-    
-     
+
       const { data, error } = await supabase
         .from("users")
         .insert([
@@ -111,9 +107,9 @@ export default function HomePage() {
         ])
         .select()
         .single();
-    
+
       if (error) throw error;
-    
+
       router.push("/profile");
     } catch (error) {
       console.error("Error saving user:", error);
@@ -253,3 +249,29 @@ export default function HomePage() {
     </div>
   );
 }
+
+const HomePage = () => {
+  const [showAuth, setShowAuth] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-black">
+      {!showAuth ? (
+        <div className="mt-[5em]">
+          <Onboarding />
+          <center>
+            <Button
+              className="w-[80%] bg-gradient-to-r from-purple-400 to-pink-600 hover:from-purple-500 hover:to-pink-700 text-white h-14 transition-all duration-200 transform hover:scale-[1.02]"
+              onClick={() => setShowAuth(true)}
+            >
+              Get Started
+            </Button>
+          </center>
+        </div>
+      ) : (
+        <AuthPage />
+      )}
+    </div>
+  );
+};
+
+export default HomePage;
