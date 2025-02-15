@@ -34,7 +34,7 @@ const tabItems = [
 
 export default function HomeIndex() {
   return (
-    <div className="container mx-auto p-4">
+    <div className="container  mx-auto p-4">
       <Tabs defaultValue="home" className="w-full py-2 rounded-full">
         <TabsList className="grid w-full grid-cols-3 bg-white/2 rounded-full">
           {tabItems.map(({ value, label, icon: Icon }) => (
