@@ -34,9 +34,17 @@ const tabItems = [
 
 export default function HomeIndex() {
   return (
-    <div className="container  mx-auto p-4">
-      <Tabs defaultValue="home" className="w-full py-2 rounded-full">
-        <TabsList className="grid w-full grid-cols-3 bg-white/2 rounded-full">
+    <div className="min-h-screen relative pb-20">
+      <Tabs defaultValue="home" className="w-full">
+        <div className="container mx-auto px-4">
+          {tabItems.map(({ value, component: Component }) => (
+            <TabsContent key={value} value={value}>
+              <Component />
+            </TabsContent>
+          ))}
+        </div>
+
+        <TabsList className="fixed bottom-6 left-0 right-0 grid w-full grid-cols-3 bg-black/80 backdrop-blur-sm border-t border-gray-800 pb-15 ">
           {tabItems.map(({ value, label, icon: Icon }) => (
             <TabsTrigger
               key={value}
@@ -44,16 +52,10 @@ export default function HomeIndex() {
               className="flex items-center gap-1 flex-col rounded-full py-2 text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent"
             >
               <Icon className="h-4 w-4" />
-              {label}
+              <span className="text-xs">{label}</span>
             </TabsTrigger>
           ))}
         </TabsList>
-
-        {tabItems.map(({ value, component: Component }) => (
-          <TabsContent key={value} value={value}>
-            <Component />
-          </TabsContent>
-        ))}
       </Tabs>
     </div>
   );

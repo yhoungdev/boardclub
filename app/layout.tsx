@@ -16,8 +16,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Signal App",
-  description: "Sell and Purchases crypto signals",
+  title: "Krotronite",
+  description: "Join a network of investors and traders who collaborate to strategically boost promising tokens",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} container antialiased`}
+        className={`container antialiased`}
       >
         <IndexApplicationProvider>{children}</IndexApplicationProvider>
         <Toaster richColors={true} position={"top-center"} />
