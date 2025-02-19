@@ -5,17 +5,18 @@ import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { ISPRODUCTION } from "@/constant";
 import { usePrivy } from "@privy-io/react-auth";
 import { usePathname, useRouter } from "next/navigation";
+import { TelegramAuthProvider } from "./TelegramAuthProvider";
 
 const AuthCheck = ({ children }: { children: ReactNode }) => {
-  const { ready, authenticated } = usePrivy();
+  const { ready: privyReady, authenticated: privyAuthenticated } = usePrivy();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (ready && !authenticated && pathname !== '/') {
+    if (privyReady && !privyAuthenticated && pathname !== '/') {
       router.push('/');
     }
-  }, [ready, authenticated, pathname, router]);
+  }, [privyReady, privyAuthenticated, pathname, router]);
 
   return <>{children}</>;
 };
@@ -28,7 +29,11 @@ const IndexApplicationProvider = ({ children }: { children: ReactNode }) => {
   return (
     <PrivyAuthProvider>
       <TonConnectUIProvider manifestUrl={`${manfiestUrl}/manifest.json`}>
-        <AuthCheck>{children}</AuthCheck>
+        <AuthCheck>
+          <TelegramAuthProvider>
+            {children}
+          </TelegramAuthProvider>
+        </AuthCheck>
       </TonConnectUIProvider>
     </PrivyAuthProvider>
   );
