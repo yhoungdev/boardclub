@@ -278,14 +278,14 @@ export function AuthPage() {
             )}
           </div>
         </Card>
-
+{/* 
         <TelegramLoginButton
                 botName="boarding_club_bot"
                 onAuth={handleTelegramWidgetAuth}
                 buttonSize="large"
                 cornerRadius={8}
                 requestAccess={true}
-              />
+              /> */}
 
         <div className="mt-8 text-center">
           <div className="flex items-center justify-center gap-2 text-gray-400">

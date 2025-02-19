@@ -24,6 +24,12 @@ const features = [
       "Avoid scams and rug pulls with Krytronite's community-verified airdrop alerts and project vetting system. We ensure a safe and secure environment for investments, helping members minimize risk and maximize returns.",
     icon: "🛡️",
   },
+  {
+    title: "Premium Insights, Education & Networking",
+    description:
+      "Access expert trading signals, insider tips, and market trend analysis to stay ahead of the game.",
+    icon: "📈",
+  },
 ];
 
 export default function Onboarding() {
