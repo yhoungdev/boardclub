@@ -4,6 +4,9 @@ import Leaderboard from "@/app/leaderboard/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Home, User, Trophy } from "lucide-react";
 import CountDown from "./countDown";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useState, useEffect } from "react";
+import { LayoutHeader } from "../header/layoutHeader";
 
 const tabItems = [
   {
@@ -19,8 +22,8 @@ const tabItems = [
   //   component: Profile,
   // },
   {
-    value: "friends",
-    label: "Friends",
+    value: "squad",
+    label: "Squad",
     icon: User,
     component: Profile,
   },
@@ -33,9 +36,20 @@ const tabItems = [
 ];
 
 export default function HomeIndex() {
+  const [currentTab, setCurrentTab] = useState("Home");
+
+  const handleTabChange = (value: string) => {
+    const tab = tabItems.find(item => item.value === value);
+    if (tab) {
+      setCurrentTab(tab.label);
+    }
+  };
+
   return (
     <div className="min-h-screen relative pb-20">
-      <Tabs defaultValue="home" className="w-full">
+      <LayoutHeader title={currentTab}/>
+
+      <Tabs defaultValue="home" className="w-full" onValueChange={handleTabChange}>
         <div className="container mx-auto px-4">
           {tabItems.map(({ value, component: Component }) => (
             <TabsContent key={value} value={value}>
@@ -44,7 +58,7 @@ export default function HomeIndex() {
           ))}
         </div>
 
-        <TabsList className="fixed bottom-6 left-0 right-0 grid w-full grid-cols-3 bg-black/80 backdrop-blur-sm border-t border-gray-800 pb-15 ">
+        <TabsList className="fixed bottom-6 left-0 right-0 grid w-full grid-cols-3 bg-black/80 backdrop-blur-sm border-t border-gray-800 pb-15">
           {tabItems.map(({ value, label, icon: Icon }) => (
             <TabsTrigger
               key={value}
