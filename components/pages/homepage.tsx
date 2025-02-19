@@ -15,6 +15,7 @@ import { FaTelegramPlane } from "react-icons/fa";
 import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
 import Onboarding from "../onboarding";
+import { TelegramLoginButton } from "../misc/loginWithTelegramWidget";
 
 export function AuthPage() {
   const router = useRouter();
@@ -154,6 +155,26 @@ export function AuthPage() {
     }
   };
 
+  const handleTelegramWidgetAuth = (user: any) => {
+    console.log("Telegram widget user:", user);
+    if (user) {
+      setIsConnected(true);
+
+      const telegramUser = {
+        id: `telegram-${user.id}`,
+        telegram_username: user.username,
+        telegram_id: user.id,
+        telegram_photo: user.photo_url,
+        joined_at: new Date().toISOString(),
+        has_paid: false,
+        referred_by: referredBy,
+        referal_url: `${url}/${user.username}`,
+      };
+      
+      saveUserToSupabase();
+    }
+  };
+
   if (!ready) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -170,6 +191,15 @@ export function AuthPage() {
     );
   }
 
+  const handleTelegramLogin = () => {
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      if (tg.initDataUnsafe?.user) {
+        setIsConnected(true);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-md mx-auto p-4 pt-20">
@@ -182,13 +212,23 @@ export function AuthPage() {
         <Card className="bg-gray-900/50 border-0 p-6">
           <div className="space-y-6">
             {!authenticated ? (
-              <Button
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white h-14"
-                onClick={handleLogin}
-              >
-                <FaTelegramPlane className="mr-2" />
-                Login with Telegram
-              </Button>
+              <div className="space-y-4">
+                <Button
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white h-14"
+                  onClick={handleLogin}
+                >
+                  <FaTelegramPlane className="mr-2" />
+                  Login with Telegram
+                </Button>
+                {typeof window !== "undefined" && window.Telegram?.WebApp && (
+                  <Button
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
+                    onClick={handleTelegramLogin}
+                  >
+                    Login to Krytronite
+                  </Button>
+                )}
+              </div>
             ) : !isConnected ? (
               <div className="space-y-4">
                 <div className="text-center">
@@ -239,6 +279,14 @@ export function AuthPage() {
           </div>
         </Card>
 
+        <TelegramLoginButton
+                botName="boarding_club_bot"
+                onAuth={handleTelegramWidgetAuth}
+                buttonSize="large"
+                cornerRadius={8}
+                requestAccess={true}
+              />
+
         <div className="mt-8 text-center">
           <div className="flex items-center justify-center gap-2 text-gray-400">
             <Coins className="h-4 w-4" />
@@ -265,6 +313,7 @@ const HomePage = () => {
             >
               Get Started
             </Button>
+            
           </center>
         </div>
       ) : (
