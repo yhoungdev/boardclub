@@ -37,35 +37,6 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen container bg-black text-white p-4">
-      <div className="mb-6 flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-bold mb-1">LeaderBoard</h1>
-        </div>
-      </div>
-
-      {/* <Card className="bg-gray-900/50 border-0 p-4 mb-6">
-        <div className="flex items-center gap-4">
-          <Avatar className="h-12 w-12 border-2 border-purple-500">
-            <AvatarImage
-              src="/placeholder.svg?height=48&width=48"
-              alt="MrTarahzad"
-            />
-            <AvatarFallback>MT</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold">MrTarahzad</span>
-              <span className="text-yellow-500">🪙</span>
-              <span>{topUsers[0]?.coins?.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center gap-1 text-sm text-purple-400">
-              <span className="font-semibold">12.3k</span>
-              <span className="text-gray-400">/ Your Rank</span>
-            </div>
-          </div>
-        </div>
-      </Card> */}
-
       <div>
         <h2 className="text-sm font-semibold mb-4">TOP USER</h2>
         <div className="space-y-3">
