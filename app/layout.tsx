@@ -8,7 +8,8 @@ import TelegramInit from "@/components/telegram/TelegramInit";
 
 export const metadata: Metadata = {
   title: "Krotronite.",
-  description: "Join a network of investors and traders who collaborate to strategically boost promising tokens",
+  description:
+    "Join a network of investors and traders who collaborate to strategically boost promising tokens",
 };
 
 export default function RootLayout({
@@ -24,10 +25,8 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
       </head>
-      <body
-        className={`container antialiased`}
-      >
-         <TelegramInit/>
+      <body className={`container antialiased`}>
+        <TelegramInit />
         <IndexApplicationProvider>{children}</IndexApplicationProvider>
         <Toaster richColors={true} position={"top-center"} />
       </body>
