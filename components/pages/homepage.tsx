@@ -162,7 +162,7 @@ export function AuthPage() {
   if (!initDataState) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p>Loading...</p>
+        <span className='loader'></span>
       </div>
     );
   }

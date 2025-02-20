@@ -117,7 +117,7 @@ export default function Profile() {
   if (isLoading || !userData) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p>Loading...</p>
+        <p className="loader"></p>
       </div>
     );
   }
