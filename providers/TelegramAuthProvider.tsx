@@ -20,14 +20,18 @@ const TelegramAuthContext = createContext<TelegramAuthContext>({
   ready: false,
 });
 
-export function TelegramAuthProvider({ children }: { children: React.ReactNode }) {
+export function TelegramAuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [user, setUser] = useState<TelegramUser | null>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const tg = (window as any).Telegram?.WebApp;
-    console.log(tg)
+    console.log(tg);
     if (tg) {
       setReady(true);
       if (tg.initDataUnsafe?.user) {

@@ -4,12 +4,16 @@ import { Wallet, Coins, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
+import {
+  TonConnectButton,
+  useTonConnectUI,
+  useTonWallet,
+} from "@tonconnect/ui-react";
 import { Address, toNano } from "ton-core";
 import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
 import Onboarding from "../onboarding";
-import { initData, useSignal } from '@telegram-apps/sdk-react';
+import { initData, useSignal } from "@telegram-apps/sdk-react";
 
 export function AuthPage() {
   const router = useRouter();
@@ -18,7 +22,7 @@ export function AuthPage() {
   const [hasPaid, setHasPaid] = useState(false);
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
-  
+
   const initDataState = useSignal(initData.state);
   const user = initDataState?.user;
 
@@ -40,11 +44,14 @@ export function AuthPage() {
           if (userData?.has_paid) {
             setHasPaid(true);
             // Set auth token in localStorage
-            localStorage.setItem('tg_auth', JSON.stringify({
-              userId: user.id,
-              authenticated: true,
-              timestamp: Date.now()
-            }));
+            localStorage.setItem(
+              "tg_auth",
+              JSON.stringify({
+                userId: user.id,
+                authenticated: true,
+                timestamp: Date.now(),
+              }),
+            );
             router.push("/profile");
           }
         } catch (error) {
@@ -66,7 +73,7 @@ export function AuthPage() {
 
   const saveUserToSupabase = async () => {
     if (!user) return;
-    
+
     try {
       const { data: existingUser, error: fetchError } = await supabase
         .from("users")
@@ -79,32 +86,32 @@ export function AuthPage() {
       }
 
       if (existingUser) {
-      
-        localStorage.setItem('tg_auth', JSON.stringify({
-          userId: user.id,
-          authenticated: true,
-          timestamp: Date.now()
-        }));
+        localStorage.setItem(
+          "tg_auth",
+          JSON.stringify({
+            userId: user.id,
+            authenticated: true,
+            timestamp: Date.now(),
+          }),
+        );
         router.push("/profile");
         return;
       }
 
-      const { error } = await supabase
-        .from("users")
-        .insert([
-          {
-            telegram_id: user.id,
-            telegram_username: user.username,
-            telegram_photo: user.photoUrl,
-            first_name: user.firstName,
-            last_name: user.lastName,
-            wallet_address: userWallet,
-            joined_at: new Date().toISOString(),
-            has_paid: false,
-            referred_by: referredBy,
-            referal_url: refUrl,
-          },
-        ]);
+      const { error } = await supabase.from("users").insert([
+        {
+          telegram_id: user.id,
+          telegram_username: user.username,
+          telegram_photo: user.photoUrl,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          wallet_address: userWallet,
+          joined_at: new Date().toISOString(),
+          has_paid: false,
+          referred_by: referredBy,
+          referal_url: refUrl,
+        },
+      ]);
 
       if (error) throw error;
       setIsConnected(true);
@@ -145,11 +152,14 @@ export function AuthPage() {
         .update({ has_paid: true })
         .eq("telegram_id", user.id);
 
-      localStorage.setItem('tg_auth', JSON.stringify({
-        userId: user.id,
-        authenticated: true,
-        timestamp: Date.now()
-      }));
+      localStorage.setItem(
+        "tg_auth",
+        JSON.stringify({
+          userId: user.id,
+          authenticated: true,
+          timestamp: Date.now(),
+        }),
+      );
 
       router.push("/profile");
     } catch (error) {
@@ -162,7 +172,7 @@ export function AuthPage() {
   if (!initDataState) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <span className='loader'></span>
+        <span className="loader"></span>
       </div>
     );
   }
@@ -199,10 +209,14 @@ export function AuthPage() {
               <div className="space-y-4">
                 <div className="text-center">
                   <span className="text-2xl font-bold text-white">$1</span>
-                  <p className="text-sm text-gray-400 mt-2">One-time entry fee</p>
+                  <p className="text-sm text-gray-400 mt-2">
+                    One-time entry fee
+                  </p>
                 </div>
                 <div>
-                  <center><TonConnectButton /></center>
+                  <center>
+                    <TonConnectButton />
+                  </center>
                 </div>
                 {wallet && (
                   <Button
@@ -244,7 +258,6 @@ const HomePage = () => {
             >
               Get Started
             </Button>
-            
           </center>
         </div>
       ) : (

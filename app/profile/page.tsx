@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
 import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
-import { initData, useSignal } from '@telegram-apps/sdk-react';
+import { initData, useSignal } from "@telegram-apps/sdk-react";
 
 interface Referral {
   id: number;
@@ -37,16 +37,16 @@ export default function Profile() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const auth = localStorage.getItem('tg_auth');
+      const auth = localStorage.getItem("tg_auth");
       if (!auth || !user) {
-        router.push('/');
+        router.push("/");
         return;
       }
 
       try {
         const { userId, authenticated } = JSON.parse(auth);
         if (!authenticated || userId !== user.id) {
-          router.push('/');
+          router.push("/");
           return;
         }
 
@@ -65,8 +65,8 @@ export default function Profile() {
           setUserData(data);
         }
       } catch (error) {
-        console.error('Auth check failed:', error);
-        router.push('/');
+        console.error("Auth check failed:", error);
+        router.push("/");
       } finally {
         setIsLoading(false);
       }

@@ -5,7 +5,7 @@ import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { ISPRODUCTION } from "@/constant";
 import { usePrivy } from "@privy-io/react-auth";
 import { usePathname, useRouter } from "next/navigation";
-import { init, initData, type User, useSignal } from '@telegram-apps/sdk-react';
+import { init, initData, type User, useSignal } from "@telegram-apps/sdk-react";
 
 const AuthCheck = ({ children }: { children: ReactNode }) => {
   const { ready: privyReady, authenticated: privyAuthenticated } = usePrivy();
@@ -20,9 +20,9 @@ const AuthCheck = ({ children }: { children: ReactNode }) => {
         firstName: user.first_name,
         lastName: user.last_name,
         id: user.id,
-        photoUrl: user.photo_url
+        photoUrl: user.photo_url,
       };
-      console.log('Telegram User Details:', userData);
+      console.log("Telegram User Details:", userData);
     }
   }, [user]);
 
@@ -38,17 +38,17 @@ const IndexApplicationProvider = ({ children }: { children: ReactNode }) => {
     init({
       debug: true,
       cssVars: true,
-      async: true
+      async: true,
     });
 
     const user = initData.user;
     if (user) {
-      console.log('Current User:', {
+      console.log("Current User:", {
         username: user.username,
         firstName: user.first_name,
         lastName: user.last_name,
         id: user.id,
-        photoUrl: user.photo_url
+        photoUrl: user.photo_url,
       });
     }
   }, []);
@@ -56,9 +56,7 @@ const IndexApplicationProvider = ({ children }: { children: ReactNode }) => {
   return (
     <PrivyAuthProvider>
       <TonConnectUIProvider manifestUrl={`${manfiestUrl}/manifest.json`}>
-        <AuthCheck>
-          {children}
-        </AuthCheck>
+        <AuthCheck>{children}</AuthCheck>
       </TonConnectUIProvider>
     </PrivyAuthProvider>
   );

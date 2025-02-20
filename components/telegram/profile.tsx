@@ -1,6 +1,6 @@
-'use client'
+"use client";
 import { useEffect, useMemo } from "react";
-import { initData, useSignal } from '@telegram-apps/sdk-react';
+import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { Card } from "@/components/ui/card";
 
 interface TelegramUser {
@@ -22,8 +22,8 @@ export default function TelegramProfile() {
 
   useEffect(() => {
     if (initDataState) {
-      console.log('Init Data State:', initDataState);
-      console.log('User Data:', initDataState.user);
+      console.log("Init Data State:", initDataState);
+      console.log("User Data:", initDataState.user);
     }
   }, [initDataState]);
 
@@ -35,9 +35,9 @@ export default function TelegramProfile() {
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
               {user.photoUrl && (
-                <img 
-                  src={user.photoUrl} 
-                  alt="Profile" 
+                <img
+                  src={user.photoUrl}
+                  alt="Profile"
                   className="rounded-full w-20 h-20 object-cover"
                 />
               )}
@@ -50,7 +50,7 @@ export default function TelegramProfile() {
                 )}
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="bg-gray-900/50 p-3 rounded">
                 <p className="text-sm text-gray-400">ID</p>

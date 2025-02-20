@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { initData, useSignal } from '@telegram-apps/sdk-react';
+import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ILayoutHeaderProps {
@@ -21,16 +21,16 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
   const [open, setOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
-  
+
   const initDataState = useSignal(initData.state);
   const user = initDataState?.user;
 
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
-      localStorage.removeItem('tg_auth');
+      localStorage.removeItem("tg_auth");
       toast.success("Logged out successfully");
-      router.push('/');
+      router.push("/");
       router.refresh();
     } catch (error) {
       toast.error("Failed to logout");
@@ -48,30 +48,35 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
         <DialogTrigger asChild>
           <div className="h-10 w-10 rounded-full overflow-hidden cursor-pointer">
             <Avatar>
-              <AvatarImage src={user?.photoUrl} alt={user?.firstName || 'User'} />
+              <AvatarImage
+                src={user?.photoUrl}
+                alt={user?.firstName || "User"}
+              />
               <AvatarFallback>
-                {user?.firstName?.[0]?.toUpperCase() || 'U'}
+                {user?.firstName?.[0]?.toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
           </div>
         </DialogTrigger>
         <DialogContent className="bg-gray-900 border-gray-800">
           <DialogHeader>
-            <DialogTitle className="text-white">Logout Confirmation</DialogTitle>
+            <DialogTitle className="text-white">
+              Logout Confirmation
+            </DialogTitle>
             <DialogDescription className="text-gray-400">
               Are you sure you want to logout?
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-3 mt-4">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setOpen(false)}
               disabled={isLoggingOut}
             >
               Cancel
             </Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={handleLogout}
               disabled={isLoggingOut}
               className="bg-red-600 hover:bg-red-700"

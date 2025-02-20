@@ -39,7 +39,7 @@ export default function HomeIndex() {
   const [currentTab, setCurrentTab] = useState("Home");
 
   const handleTabChange = (value: string) => {
-    const tab = tabItems.find(item => item.value === value);
+    const tab = tabItems.find((item) => item.value === value);
     if (tab) {
       setCurrentTab(tab.label);
     }
@@ -47,9 +47,13 @@ export default function HomeIndex() {
 
   return (
     <div className="min-h-screen relative pb-20">
-      <LayoutHeader title={currentTab}/>
+      <LayoutHeader title={currentTab} />
 
-      <Tabs defaultValue="home" className="w-full" onValueChange={handleTabChange}>
+      <Tabs
+        defaultValue="home"
+        className="w-full"
+        onValueChange={handleTabChange}
+      >
         <div className="container mx-auto px-4">
           {tabItems.map(({ value, component: Component }) => (
             <TabsContent key={value} value={value}>
