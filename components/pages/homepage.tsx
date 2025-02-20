@@ -17,9 +17,7 @@ import { initData, useSignal } from "@telegram-apps/sdk-react";
 
 export function AuthPage() {
   const router = useRouter();
-  const [isConnected, setIsConnected] = useState(false);
   const [isDepositing, setIsDepositing] = useState(false);
-  const [hasPaid, setHasPaid] = useState(false);
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
 
@@ -29,40 +27,6 @@ export function AuthPage() {
   const userWallet = wallet?.account?.address;
   const ownAddress = "0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7";
 
-  useEffect(() => {
-    const checkPaymentStatus = async () => {
-      if (user?.id) {
-        try {
-          const { data: userData, error } = await supabase
-            .from("users")
-            .select("has_paid")
-            .eq("telegram_id", user.id)
-            .single();
-
-          if (error) throw error;
-
-          if (userData?.has_paid) {
-            setHasPaid(true);
-            // Set auth token in localStorage
-            localStorage.setItem(
-              "tg_auth",
-              JSON.stringify({
-                userId: user.id,
-                authenticated: true,
-                timestamp: Date.now(),
-              }),
-            );
-            router.push("/profile");
-          }
-        } catch (error) {
-          console.error("Error checking payment status:", error);
-        }
-      }
-    };
-
-    checkPaymentStatus();
-  }, [user?.id, router]);
-
   const url = typeof window !== "undefined" ? window.location.origin : "";
   const refUrl = `${url}/${user?.username}`;
 
@@ -70,55 +34,6 @@ export function AuthPage() {
     typeof window !== "undefined" ? window.location.search : "",
   );
   const referredBy = searchParams.get("ref");
-
-  const saveUserToSupabase = async () => {
-    if (!user) return;
-
-    try {
-      const { data: existingUser, error: fetchError } = await supabase
-        .from("users")
-        .select()
-        .eq("telegram_id", user.id)
-        .single();
-
-      if (fetchError && fetchError.code !== "PGRST116") {
-        throw fetchError;
-      }
-
-      if (existingUser) {
-        localStorage.setItem(
-          "tg_auth",
-          JSON.stringify({
-            userId: user.id,
-            authenticated: true,
-            timestamp: Date.now(),
-          }),
-        );
-        router.push("/profile");
-        return;
-      }
-
-      const { error } = await supabase.from("users").insert([
-        {
-          telegram_id: user.id,
-          telegram_username: user.username,
-          telegram_photo: user.photoUrl,
-          first_name: user.firstName,
-          last_name: user.lastName,
-          wallet_address: userWallet,
-          joined_at: new Date().toISOString(),
-          has_paid: false,
-          referred_by: referredBy,
-          referal_url: refUrl,
-        },
-      ]);
-
-      if (error) throw error;
-      setIsConnected(true);
-    } catch (error) {
-      console.error("Error saving user:", error);
-    }
-  };
 
   const handleDeposit = async () => {
     if (!user) {
@@ -147,10 +62,24 @@ export function AuthPage() {
         ],
       });
 
-      await supabase
-        .from("users")
-        .update({ has_paid: true })
-        .eq("telegram_id", user.id);
+
+      const { error } = await supabase.from("users").insert([
+        {
+          id: crypto.randomUUID(),
+          telegram_id: user.id.toString(),
+          telegram_username: user.username || '',
+          telegram_photo: user.photoUrl || '',
+          wallet_address: userWallet || '',
+          joined_at: new Date().toISOString(),
+          has_paid: true, 
+          referal_url: refUrl,
+          referred_by: referredBy || null,
+          created_at: new Date().toISOString(),
+          publicKey: wallet?.account?.publicKey || null
+        },
+      ]);
+
+      if (error) throw error;
 
       localStorage.setItem(
         "tg_auth",
@@ -177,14 +106,6 @@ export function AuthPage() {
     );
   }
 
-  if (hasPaid) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p>Redirecting...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-md mx-auto p-4 pt-20">
@@ -196,39 +117,26 @@ export function AuthPage() {
         </div>
         <Card className="bg-gray-900/50 border-0 p-6">
           <div className="space-y-6">
-            {!isConnected ? (
-              <div className="space-y-4">
+            <div className="space-y-4">
+              <div className="text-center">
+                <span className="text-2xl font-bold text-white">$1</span>
+                <p className="text-sm text-gray-400 mt-2">One-time entry fee</p>
+              </div>
+              <div>
+                <center>
+                  <TonConnectButton />
+                </center>
+              </div>
+              {wallet && (
                 <Button
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
-                  onClick={saveUserToSupabase}
+                  onClick={handleDeposit}
+                  disabled={isDepositing}
                 >
-                  Continue
+                  {isDepositing ? "Processing Payment..." : "Pay Entry Fee"}
                 </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="text-center">
-                  <span className="text-2xl font-bold text-white">$1</span>
-                  <p className="text-sm text-gray-400 mt-2">
-                    One-time entry fee
-                  </p>
-                </div>
-                <div>
-                  <center>
-                    <TonConnectButton />
-                  </center>
-                </div>
-                {wallet && (
-                  <Button
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
-                    onClick={handleDeposit}
-                    disabled={isDepositing}
-                  >
-                    {isDepositing ? "Processing Payment..." : "Pay Entry Fee"}
-                  </Button>
-                )}
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </Card>
 
