@@ -43,7 +43,7 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
 
   return (
     <div className="text-white p-4 flex justify-between items-center border-b border-gray-800/50">
-      <h1 className="font-semibold text-xl">{title}</h1>
+      <h1 className="font-semibold text-lg">{title}</h1>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <div className="h-10 w-10 rounded-full overflow-hidden cursor-pointer">

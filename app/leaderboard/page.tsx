@@ -40,6 +40,18 @@ export default function Leaderboard() {
       <div>
         <h2 className="text-sm font-semibold mb-4">TOP USER</h2>
         <div className="space-y-3">
+          <div className="flex items-center gap-3 border-[1px] border-gray-500/20 bg-gray-800/40 px-4 py-4 rounded-2xl">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src="" alt="User" />
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-sm">Loading</span>
+                <span className="text-yellow-500 font-bold">🪙 #1 </span>
+              </div>
+            </div>
+          </div>
           {topUsers?.map((user, index) => (
             <Card key={user.id} className="bg-gray-900/50 border-0 p-3">
               <div className="flex items-center gap-3">
