@@ -4,18 +4,12 @@ import { Wallet, Coins, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import {
-  TonConnectButton,
-  useTonConnectUI,
-  useTonWallet,
-} from "@tonconnect/ui-react";
+import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { Address, toNano } from "ton-core";
-import { usePrivy } from "@privy-io/react-auth";
-import { FaTelegramPlane } from "react-icons/fa";
 import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
 import Onboarding from "../onboarding";
-import { TelegramLoginButton } from "../misc/loginWithTelegramWidget";
+import { initData, useSignal } from '@telegram-apps/sdk-react';
 
 export function AuthPage() {
   const router = useRouter();
@@ -24,26 +18,34 @@ export function AuthPage() {
   const [hasPaid, setHasPaid] = useState(false);
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
-  const { login, user, authenticated, ready } = usePrivy();
+  
+  const initDataState = useSignal(initData.state);
+  const user = initDataState?.user;
 
   const userWallet = wallet?.account?.address;
   const ownAddress = "0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7";
 
   useEffect(() => {
     const checkPaymentStatus = async () => {
-      if (ready && authenticated && user?.id) {
+      if (user?.id) {
         try {
           const { data: userData, error } = await supabase
             .from("users")
             .select("has_paid")
-            .eq("id", user.id)
+            .eq("telegram_id", user.id)
             .single();
 
           if (error) throw error;
 
           if (userData?.has_paid) {
             setHasPaid(true);
-            router.refresh();
+            // Set auth token in localStorage
+            localStorage.setItem('tg_auth', JSON.stringify({
+              userId: user.id,
+              authenticated: true,
+              timestamp: Date.now()
+            }));
+            router.push("/profile");
           }
         } catch (error) {
           console.error("Error checking payment status:", error);
@@ -52,22 +54,10 @@ export function AuthPage() {
     };
 
     checkPaymentStatus();
-  }, [ready, authenticated, user?.id, router]);
-
-  if (ready && authenticated) {
-    console.log("User authenticated:", user);
-  }
+  }, [user?.id, router]);
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
-  const refUrl = `${url}/${user?.telegram?.username}`;
-
-  const handleLogin = async () => {
-    try {
-      await login();
-    } catch (error) {
-      console.error("❌ Login failed:", error);
-    }
-  };
+  const refUrl = `${url}/${user?.username}`;
 
   const searchParams = new URLSearchParams(
     typeof window !== "undefined" ? window.location.search : "",
@@ -75,11 +65,13 @@ export function AuthPage() {
   const referredBy = searchParams.get("ref");
 
   const saveUserToSupabase = async () => {
+    if (!user) return;
+    
     try {
       const { data: existingUser, error: fetchError } = await supabase
         .from("users")
         .select()
-        .eq("id", user?.id)
+        .eq("telegram_id", user.id)
         .single();
 
       if (fetchError && fetchError.code !== "PGRST116") {
@@ -87,38 +79,42 @@ export function AuthPage() {
       }
 
       if (existingUser) {
+      
+        localStorage.setItem('tg_auth', JSON.stringify({
+          userId: user.id,
+          authenticated: true,
+          timestamp: Date.now()
+        }));
         router.push("/profile");
         return;
       }
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("users")
         .insert([
           {
-            id: user?.id,
-            telegram_username: user?.telegram?.username,
-            telegram_id: user?.telegram?.telegramUserId,
-            telegram_photo: user?.telegram?.photoUrl,
+            telegram_id: user.id,
+            telegram_username: user.username,
+            telegram_photo: user.photoUrl,
+            first_name: user.firstName,
+            last_name: user.lastName,
             wallet_address: userWallet,
             joined_at: new Date().toISOString(),
-            has_paid: true,
+            has_paid: false,
             referred_by: referredBy,
             referal_url: refUrl,
           },
-        ])
-        .select()
-        .single();
+        ]);
 
       if (error) throw error;
-
-      router.push("/profile");
+      setIsConnected(true);
     } catch (error) {
       console.error("Error saving user:", error);
     }
   };
 
   const handleDeposit = async () => {
-    if (!authenticated) {
+    if (!user) {
       console.error("❌ User not authenticated");
       return;
     }
@@ -130,7 +126,6 @@ export function AuthPage() {
 
     try {
       setIsDepositing(true);
-
       const receiverAddress = Address.parse(ownAddress);
 
       await tonConnectUI.sendTransaction({
@@ -145,9 +140,18 @@ export function AuthPage() {
         ],
       });
 
-      setIsConnected(true);
+      await supabase
+        .from("users")
+        .update({ has_paid: true })
+        .eq("telegram_id", user.id);
 
-      await saveUserToSupabase();
+      localStorage.setItem('tg_auth', JSON.stringify({
+        userId: user.id,
+        authenticated: true,
+        timestamp: Date.now()
+      }));
+
+      router.push("/profile");
     } catch (error) {
       console.error("❌ Transaction failed:", error);
     } finally {
@@ -155,27 +159,7 @@ export function AuthPage() {
     }
   };
 
-  const handleTelegramWidgetAuth = (user: any) => {
-    console.log("Telegram widget user:", user);
-    if (user) {
-      setIsConnected(true);
-
-      const telegramUser = {
-        id: `telegram-${user.id}`,
-        telegram_username: user.username,
-        telegram_id: user.id,
-        telegram_photo: user.photo_url,
-        joined_at: new Date().toISOString(),
-        has_paid: false,
-        referred_by: referredBy,
-        referal_url: `${url}/${user.username}`,
-      };
-      
-      saveUserToSupabase();
-    }
-  };
-
-  if (!ready) {
+  if (!initDataState) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p>Loading...</p>
@@ -183,22 +167,13 @@ export function AuthPage() {
     );
   }
 
-  if (authenticated && hasPaid) {
+  if (hasPaid) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p>Redirecting...</p>
       </div>
     );
   }
-
-  const handleTelegramLogin = () => {
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      if (tg.initDataUnsafe?.user) {
-        setIsConnected(true);
-      }
-    }
-  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -211,36 +186,23 @@ export function AuthPage() {
         </div>
         <Card className="bg-gray-900/50 border-0 p-6">
           <div className="space-y-6">
-            {!authenticated ? (
+            {!isConnected ? (
               <div className="space-y-4">
                 <Button
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white h-14"
-                  onClick={handleLogin}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
+                  onClick={saveUserToSupabase}
                 >
-                  <FaTelegramPlane className="mr-2" />
-                  Login with Telegram
+                  Continue
                 </Button>
-                {typeof window !== "undefined" && window.Telegram?.WebApp && (
-                  <Button
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
-                    onClick={handleTelegramLogin}
-                  >
-                    Login to Krytronite
-                  </Button>
-                )}
               </div>
-            ) : !isConnected ? (
+            ) : (
               <div className="space-y-4">
                 <div className="text-center">
                   <span className="text-2xl font-bold text-white">$1</span>
-                  <p className="text-sm text-gray-400 mt-2">
-                    One-time entry fee
-                  </p>
+                  <p className="text-sm text-gray-400 mt-2">One-time entry fee</p>
                 </div>
                 <div>
-                  <center>
-                    <TonConnectButton />
-                  </center>
+                  <center><TonConnectButton /></center>
                 </div>
                 {wallet && (
                   <Button
@@ -252,40 +214,9 @@ export function AuthPage() {
                   </Button>
                 )}
               </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="p-4 rounded-lg bg-gray-800/50 text-center">
-                  <div className="text-sm text-gray-400 mb-1">
-                    Amount to deposit
-                  </div>
-                  <span className="text-2xl font-bold">1 TON</span>
-                </div>
-                <Button
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
-                  onClick={handleDeposit}
-                  disabled={isDepositing}
-                >
-                  {isDepositing ? (
-                    "Processing..."
-                  ) : (
-                    <>
-                      Deposit Now
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </>
-                  )}
-                </Button>
-              </div>
             )}
           </div>
         </Card>
-{/* 
-        <TelegramLoginButton
-                botName="boarding_club_bot"
-                onAuth={handleTelegramWidgetAuth}
-                buttonSize="large"
-                cornerRadius={8}
-                requestAccess={true}
-              /> */}
 
         <div className="mt-8 text-center">
           <div className="flex items-center justify-center gap-2 text-gray-400">

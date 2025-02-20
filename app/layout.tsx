@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import IndexApplicationProvider from "@/providers/indexProvider";
 import Script from "next/script";
+import { initTg } from "@/lib/initTg";
+import TelegramInit from "@/components/telegram/TelegramInit";
 
 export const metadata: Metadata = {
-  title: "Krotronite",
+  title: "Krotronite.",
   description: "Join a network of investors and traders who collaborate to strategically boost promising tokens",
 };
 
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body
         className={`container antialiased`}
       >
+         <TelegramInit/>
         <IndexApplicationProvider>{children}</IndexApplicationProvider>
         <Toaster richColors={true} position={"top-center"} />
       </body>

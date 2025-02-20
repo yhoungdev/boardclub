@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
 import { supabase } from "@/config/supabase";
-import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
+import { initData, useSignal } from '@telegram-apps/sdk-react';
 
 interface Referral {
   id: number;
@@ -16,54 +16,64 @@ interface Referral {
 }
 
 interface UserData {
-  id: string;
+  telegram_id: number;
   telegram_username: string;
   telegram_photo: string;
   wallet_address: string;
   joined_at: string;
   has_paid: boolean;
   referal_url: string;
-  publicKey: string;
 }
 
 export default function Profile() {
   const router = useRouter();
-  const { user, authenticated, ready } = usePrivy();
   const [copied, setCopied] = useState(false);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch user data from Supabase
+  const initDataState = useSignal(initData.state);
+  const user = initDataState?.user;
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user?.id) return;
-
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching user data:", error);
+    const checkAuth = async () => {
+      const auth = localStorage.getItem('tg_auth');
+      if (!auth || !user) {
+        router.push('/');
         return;
       }
 
-      if (data) {
-        setUserData(data);
+      try {
+        const { userId, authenticated } = JSON.parse(auth);
+        if (!authenticated || userId !== user.id) {
+          router.push('/');
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("telegram_id", userId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching user data:", error);
+          return;
+        }
+
+        if (data) {
+          setUserData(data);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        router.push('/');
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    if (authenticated && user) {
-      fetchUserData();
-    }
-  }, [authenticated, user]);
-
-  useEffect(() => {
-    if (ready && !authenticated) {
-      router.push("/");
-    }
-  }, [ready, authenticated, router]);
+    checkAuth();
+  }, [user, router]);
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
   const referralUrl = userData
@@ -89,7 +99,7 @@ export default function Profile() {
       if (error) {
         console.error("Error fetching referrals:", error);
       } else {
-        setReferrals(data);
+        setReferrals(data || []);
       }
     };
 
@@ -104,7 +114,7 @@ export default function Profile() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (!ready || !authenticated || !user || !userData) {
+  if (isLoading || !userData) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p>Loading...</p>
