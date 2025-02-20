@@ -1,6 +1,4 @@
 import { FC, useState } from "react";
-import Avatar from "boring-avatars";
-import { usePrivy } from "@privy-io/react-auth";
 import {
   Dialog,
   DialogContent,
@@ -12,27 +10,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { initData, useSignal } from '@telegram-apps/sdk-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ILayoutHeaderProps {
   title: string;
-  username?: string;
 }
 
-export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title, username = "user" }) => {
+export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
   const [open, setOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const { logout, authenticated } = usePrivy();
   const router = useRouter();
+  
+  const initDataState = useSignal(initData.state);
+  const user = initDataState?.user;
 
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
-      if (authenticated) {
-        await logout();
-        toast.success("Logged out successfully");
-        router.push('/');
-        router.refresh();
-      }
+      localStorage.removeItem('tg_auth');
+      toast.success("Logged out successfully");
+      router.push('/');
+      router.refresh();
     } catch (error) {
       toast.error("Failed to logout");
       console.error("Logout error:", error);
@@ -48,12 +47,12 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title, username = "user" 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <div className="h-10 w-10 rounded-full overflow-hidden cursor-pointer">
-            <Avatar
-              size={40}
-              name={username}
-              variant="marble"
-              colors={["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]}
-            />
+            <Avatar>
+              <AvatarImage src={user?.photoUrl} alt={user?.firstName || 'User'} />
+              <AvatarFallback>
+                {user?.firstName?.[0]?.toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
           </div>
         </DialogTrigger>
         <DialogContent className="bg-gray-900 border-gray-800">
