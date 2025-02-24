@@ -88,8 +88,10 @@ export default function HomeClient() {
   };
 
   return (
-    <>
+    !isAuthenticated  ? (
       <HomeIndex />
-    </>
+    ) : (
+      <HomePage />
+    )
   );
 }
