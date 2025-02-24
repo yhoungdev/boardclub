@@ -14,6 +14,7 @@ import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
 import Onboarding from "../onboarding";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
+import { toast } from "sonner";
 
 export function AuthPage() {
   const router = useRouter();
@@ -28,26 +29,34 @@ export function AuthPage() {
   const ownAddress = "0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7";
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
-  const refUrl = `${url}/${user?.username}`;
+  const refUrl = `${url}?ref=${user?.username || ''}`;
+  
 
   const searchParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : "",
+    typeof window !== "undefined" ? window.location.search : ""
   );
   const referredBy = searchParams.get("ref");
 
   const handleDeposit = async () => {
     if (!user) {
-      console.error("❌ User not authenticated");
+      toast.error("User not authenticated");
       return;
     }
 
     if (!tonConnectUI || !wallet || !wallet.account) {
-      console.error("❌ Wallet not connected or invalid");
+      toast.error("Please connect your wallet first");
       return;
     }
 
     try {
       setIsDepositing(true);
+
+      const existingUser = await checkExistingUser(user.id.toString());
+      if (existingUser) {
+        toast.error("User already registered");
+        return;
+      }
+
       const receiverAddress = Address.parse(ownAddress);
 
       await tonConnectUI.sendTransaction({
@@ -62,23 +71,38 @@ export function AuthPage() {
         ],
       });
 
-      const { error } = await supabase.from("users").insert([
+      const { error: userError } = await supabase.from("users").insert([
         {
           id: crypto.randomUUID(),
           telegram_id: user.id.toString(),
-          telegram_username: user.username || "",
-          telegram_photo: user.photoUrl || "",
-          wallet_address: userWallet || "",
+          telegram_username: user.username || 'anonymous',
+          telegram_photo: user.photoUrl || '',
+          wallet_address: userWallet || '',
           joined_at: new Date().toISOString(),
           has_paid: true,
           referal_url: refUrl,
-          referred_by: referredBy || null,
+          referred_by: referredBy,
           created_at: new Date().toISOString(),
-          publicKey: wallet?.account?.publicKey || null,
+          publicKey: wallet.account.publicKey || '',
+          referal_count: 0,
         },
       ]);
 
-      if (error) throw error;
+      if (userError) {
+        toast.error("Failed to create user");
+        throw userError;
+      }
+
+      if (referredBy) {
+        const { error: updateError } = await supabase.rpc('increment_referral_count', {
+          username: referredBy
+        });
+        
+        if (updateError) {
+          console.error("Failed to update referrer count:", updateError);
+          // Don't throw here, as the user is already created
+        }
+      }
 
       localStorage.setItem(
         "tg_auth",
@@ -89,12 +113,23 @@ export function AuthPage() {
         }),
       );
 
+      toast.success("Registration successful!");
       router.push("/profile");
     } catch (error) {
       console.error("❌ Transaction failed:", error);
+      toast.error("Transaction failed");
     } finally {
       setIsDepositing(false);
     }
+  };
+
+  const checkExistingUser = async (telegramId: string) => {
+    const { data } = await supabase
+      .from("users")
+      .select("*")
+      .eq("telegram_id", telegramId)
+      .single();
+    return data;
   };
 
   if (!initDataState) {

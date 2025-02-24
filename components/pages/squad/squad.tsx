@@ -111,13 +111,107 @@ export default function SquadPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <span className="loader"></span>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="min-h-screen bg-black text-white flex items-center justify-center">
+  //       <span className="loader"></span>
+  //     </div>
+  //   );
+  // }
 
-  return <div className="min-h-screen container bg-black text-white p-4"></div>;
+  return (
+    <div className="min-h-screen bg-black text-white p-4">
+      <div className="max-w-4xl mx-auto space-y-8">
+    
+        <Card className="p-6 bg-gray-900/50 border-0">
+          <h2 className="text-2xl font-bold mb-4 text-white">Your Squad</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-gray-400">Total Members</p>
+              <p className="text-3xl font-bold">{referrals.length}</p>
+            </div>
+            <Button
+              onClick={copyToClipboard}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              {copied ? "Copied!" : "Share Link"}
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className=" rounded-lg p-4">
+            <h3 className="text-lg font-semibold mb-4 text-white">Your Membership Level</h3>
+            {(() => {
+              const level = (() => {
+                const count = referrals.length;
+                if (count >= 100) return { name: "Diamond", icon: "💎", color: "text-blue-400" };
+                if (count >= 50) return { name: "Platinum", icon: "🏆", color: "text-gray-300" };
+                if (count >= 20) return { name: "Gold", icon: "🥇", color: "text-yellow-400" };
+                if (count >= 5) return { name: "Silver", icon: "🥈", color: "text-gray-400" };
+                return { name: "Bronze", icon: "🥉", color: "text-orange-400" };
+              })();
+
+              return (
+                <div className={`flex items-center gap-3 ${level.color} text-xl font-bold`}>
+                  <span className="text-2xl">{level.icon}</span>
+                  <span className="">{level.name}</span>
+                </div>
+              );
+            })()}
+
+            <div className="mt-6 space-y-4">
+              {[
+                { icon: "🥉", name: "Bronze", range: "0 - 4" },
+                { icon: "🥈", name: "Silver", range: "5 - 19" },
+                { icon: "🥇", name: "Gold", range: "20 - 49" },
+                { icon: "🏆", name: "Platinum", range: "50 - 99" },
+                { icon: "💎", name: "Diamond", range: "100+" }
+              ].map((level, index) => (
+                <div key={index} className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-2 text-white">
+                    {level.icon} {level.name}
+                  </span>
+                  <span className="text-white">{level.range}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-4">Squad Members</h3>
+            <div className="space-y-4">
+              {referrals.map((referral) => (
+                <div
+                  key={referral.id}
+                  className="flex items-center justify-between bg-gray-800/30 p-3 rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <Avatar>
+                      <AvatarImage src={referral.avatar} />
+                      <AvatarFallback>
+                        {referral.name?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium">@{referral.name}</p>
+                      <p className="text-sm text-gray-400">
+                        Joined {new Date(referral.joinedDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {referrals.length === 0 && (
+                <p className="text-center text-gray-400 py-4">
+                  No squad members yet. Share your link to grow your team!
+                </p>
+              )}
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
 }
