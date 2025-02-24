@@ -62,20 +62,19 @@ export function AuthPage() {
         ],
       });
 
-
       const { error } = await supabase.from("users").insert([
         {
           id: crypto.randomUUID(),
           telegram_id: user.id.toString(),
-          telegram_username: user.username || '',
-          telegram_photo: user.photoUrl || '',
-          wallet_address: userWallet || '',
+          telegram_username: user.username || "",
+          telegram_photo: user.photoUrl || "",
+          wallet_address: userWallet || "",
           joined_at: new Date().toISOString(),
-          has_paid: true, 
+          has_paid: true,
           referal_url: refUrl,
           referred_by: referredBy || null,
           created_at: new Date().toISOString(),
-          publicKey: wallet?.account?.publicKey || null
+          publicKey: wallet?.account?.publicKey || null,
         },
       ]);
 
