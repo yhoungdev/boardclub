@@ -7,6 +7,7 @@ import CountDown from "./countDown";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useEffect } from "react";
 import { LayoutHeader } from "../header/layoutHeader";
+import SquadPage from "./squad/squad";
 
 const tabItems = [
   {
@@ -25,7 +26,7 @@ const tabItems = [
     value: "squad",
     label: "Squad",
     icon: User,
-    component: Profile,
+    component: SquadPage,
   },
   {
     value: "leaderboard",
