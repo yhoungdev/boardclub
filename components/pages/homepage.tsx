@@ -29,26 +29,22 @@ export function AuthPage() {
   const ownAddress = "0QBUagAZij47vy7i-p271eqVLaunwFpMn2tuGAU_XMoWMB-7";
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
+  const refUrl = `${url}?ref=${user?.username || ''}`;
   
-  const refUrl = `${url}?ref=${user?.username}`;
 
-  const checkExistingUser = async (telegramId: string) => {
-    const { data } = await supabase
-      .from("users")
-      .select("*")
-      .eq("telegram_id", telegramId)
-      .single();
-    return data;
-  };
+  const searchParams = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : ""
+  );
+  const referredBy = searchParams.get("ref");
 
   const handleDeposit = async () => {
     if (!user) {
-      console.error("❌ User not authenticated");
+      toast.error("User not authenticated");
       return;
     }
 
     if (!tonConnectUI || !wallet || !wallet.account) {
-      console.error("❌ Wallet not connected or invalid");
+      toast.error("Please connect your wallet first");
       return;
     }
 
@@ -75,27 +71,28 @@ export function AuthPage() {
         ],
       });
 
- 
       const { error: userError } = await supabase.from("users").insert([
         {
           id: crypto.randomUUID(),
           telegram_id: user.id.toString(),
-          telegram_username: user.username || "",
-          telegram_photo: user.photoUrl || "",
-          wallet_address: userWallet || "",
+          telegram_username: user.username || 'anonymous',
+          telegram_photo: user.photoUrl || '',
+          wallet_address: userWallet || '',
           joined_at: new Date().toISOString(),
           has_paid: true,
           referal_url: refUrl,
-          referred_by: referredBy || null,
+          referred_by: referredBy,
           created_at: new Date().toISOString(),
-          publicKey: wallet?.account?.publicKey || null,
-          referal_count: 0, // Initialize referral count
+          publicKey: wallet.account.publicKey || '',
+          referal_count: 0,
         },
       ]);
 
-      if (userError) throw userError;
+      if (userError) {
+        toast.error("Failed to create user");
+        throw userError;
+      }
 
-     
       if (referredBy) {
         const { error: updateError } = await supabase.rpc('increment_referral_count', {
           username: referredBy
@@ -103,6 +100,7 @@ export function AuthPage() {
         
         if (updateError) {
           console.error("Failed to update referrer count:", updateError);
+          // Don't throw here, as the user is already created
         }
       }
 
@@ -115,6 +113,7 @@ export function AuthPage() {
         }),
       );
 
+      toast.success("Registration successful!");
       router.push("/profile");
     } catch (error) {
       console.error("❌ Transaction failed:", error);
@@ -122,6 +121,15 @@ export function AuthPage() {
     } finally {
       setIsDepositing(false);
     }
+  };
+
+  const checkExistingUser = async (telegramId: string) => {
+    const { data } = await supabase
+      .from("users")
+      .select("*")
+      .eq("telegram_id", telegramId)
+      .single();
+    return data;
   };
 
   if (!initDataState) {
