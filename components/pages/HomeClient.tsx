@@ -83,12 +83,18 @@ export default function HomeClient() {
     const auth = localStorage.getItem("tg_auth");
     if (!auth) return false;
 
-    const { authenticated, timestamp } = JSON.parse(auth);
-    return authenticated && Date.now() - timestamp < 24 * 60 * 60 * 1000;
+    try {
+      const { userId, authenticated, timestamp } = JSON.parse(auth);
+      const isValid = Date.now() - timestamp < 24 * 60 * 60 * 1000;
+      return authenticated && isValid && userId === user?.id;
+    } catch (error) {
+      console.error("Auth validation failed:", error);
+      return false;
+    }
   };
 
   return (
-    !isAuthenticated  ? (
+    isAuthenticated() ? (
       <HomeIndex />
     ) : (
       <HomePage />
