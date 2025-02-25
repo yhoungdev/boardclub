@@ -149,7 +149,6 @@ export function AuthPage() {
     );
   }
 
-  console.log(localStorage.getItem('tg_auth'), 'store')
   
 
   return (
