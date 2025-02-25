@@ -8,12 +8,12 @@ import dynamic from "next/dynamic";
 const AuthCheck = dynamic(() => import("./AuthCheck"), { ssr: false });
 
 const IndexApplicationProvider = ({ children }: { children: ReactNode }) => {
-  const manfiestUrl = ISPRODUCTION
-    ? "https://boardclub.vercel.app"
-    : "http://172.20.10.3:3000";
+  const manifestUrl = ISPRODUCTION
+    ? "https://boardclub.vercel.app/manifest.json"
+    : "http://127.0.0.1:3000/manifest.json";
 
   return (
-    <TonConnectUIProvider manifestUrl={`${manfiestUrl}/manifest.json`}>
+    <TonConnectUIProvider manifestUrl={manifestUrl}>
       <AuthCheck>{children}</AuthCheck>
     </TonConnectUIProvider>
   );
