@@ -164,7 +164,7 @@ export function AuthPage() {
           <div className="space-y-6">
             <div className="space-y-4">
               <div className="text-center">
-                <span className="text-2xl font-bold text-white">$1</span>
+                <span className="text-2xl font-bold text-white">1 TON</span>
                 <p className="text-sm text-gray-400 mt-2">One-time entry fee</p>
                 <p className="text-sm text-gray-400 mt-2">Refundable after launch.</p>
               </div>
