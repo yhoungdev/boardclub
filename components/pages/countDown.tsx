@@ -3,17 +3,19 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 
 const CountDown = () => {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 14,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
+  const targetDate = new Date('2025-03-08T00:00:00');
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const now = new Date();
+    const difference = targetDate.getTime() - now.getTime();
+    return {
+      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((difference / 1000 / 60) % 60),
+      seconds: Math.floor((difference / 1000) % 60),
+    };
   });
 
   useEffect(() => {
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + 14);
-
     const calculateTimeLeft = () => {
       const now = new Date();
       const difference = targetDate.getTime() - now.getTime();
@@ -25,8 +27,6 @@ const CountDown = () => {
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
 
