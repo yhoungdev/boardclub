@@ -53,8 +53,22 @@ export function AuthPage() {
 
       const existingUser = await checkExistingUser(user.id.toString());
       if (existingUser) {
-        toast.error("User already registered");
-        return;
+        // toast.error("User already registered");
+        localStorage.setItem(
+          "tg_auth",
+          JSON.stringify({
+            userId: user.id,
+            authenticated: true,
+            timestamp: Date.now(),
+          }),
+        );
+        
+
+        window.location.reload();
+        window.location.href = '/profile';
+  
+
+        //return;
       }
 
       const receiverAddress = Address.parse(ownAddress);
