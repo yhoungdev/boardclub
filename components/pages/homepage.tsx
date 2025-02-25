@@ -170,7 +170,7 @@ export function AuthPage() {
       <div className="max-w-md mx-auto p-4 pt-20">
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-            Welcome to Krytronite
+            Welcome to Kryptronite
           </h1>
           <p className="text-gray-400">Start your journey with just 1 TON</p>
         </div>

@@ -9,7 +9,7 @@ const features = [
   {
     title: "Exclusive Access to Crypto Funding & Opportunities",
     description:
-      "Gain early access to pre-sale token launches, verified airdrops, and high-potential blockchain projects. Krytronite members get priority access to funding pools, launchpads, and investment opportunities before they go public.",
+      "Gain early access to pre-sale token launches, verified airdrops, and high-potential blockchain projects. Kryptronite members get priority access to funding pools, launchpads, and investment opportunities before they go public.",
     icon: "🚀",
   },
   {
@@ -21,7 +21,7 @@ const features = [
   {
     title: "Verified Airdrops & Secure Investment Environment",
     description:
-      "Avoid scams and rug pulls with Krytronite's community-verified airdrop alerts and project vetting system. We ensure a safe and secure environment for investments, helping members minimize risk and maximize returns.",
+      "Avoid scams and rug pulls with Kryptronite's community-verified airdrop alerts and project vetting system. We ensure a safe and secure environment for investments, helping members minimize risk and maximize returns.",
     icon: "🛡️",
   },
   {
