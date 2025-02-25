@@ -100,7 +100,6 @@ export function AuthPage() {
         
         if (updateError) {
           console.error("Failed to update referrer count:", updateError);
-          // Don't throw here, as the user is already created
         }
       }
 
