@@ -65,7 +65,7 @@ export function AuthPage() {
         
 
         window.location.reload();
-        window.location.href = '/profile';
+
   
 
         //return;
@@ -129,7 +129,7 @@ export function AuthPage() {
 
       toast.success("Registration successful!");
       window.location.reload();
-      window.location.href = '/profile';
+      //window.location.href = '/profile';
 
       // if (window.Telegram?.WebApp) {
       //   window.Telegram.WebApp.MainButton.hide();
