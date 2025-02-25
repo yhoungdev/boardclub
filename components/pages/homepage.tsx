@@ -114,15 +114,16 @@ export function AuthPage() {
      
 
       toast.success("Registration successful!");
+      window.location.reload();
+      window.location.href = '/profile';
 
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.MainButton.hide();
-        window.Telegram.WebApp.BackButton.hide();
-        window.Telegram.WebApp.navigate('/profile');
-      } else {
-        window.location.reload();
-        window.location.href = '/profile';
-      }
+      // if (window.Telegram?.WebApp) {
+      //   window.Telegram.WebApp.MainButton.hide();
+      //   window.Telegram.WebApp.BackButton.hide();
+      //   window.Telegram.WebApp.navigate('/profile');
+      // } else {
+
+      // }
     } catch (error) {
       console.error("❌ Transaction failed:", error);
       toast.error("Transaction failed");
