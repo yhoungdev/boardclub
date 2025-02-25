@@ -158,7 +158,7 @@ export function AuthPage() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
             Welcome to Krytronite
           </h1>
-          <p className="text-gray-400">Start your journey with just $1</p>
+          <p className="text-gray-400">Start your journey with just 1 TON</p>
         </div>
         <Card className="bg-gray-900/50 border-0 p-6">
           <div className="space-y-6">
@@ -166,6 +166,7 @@ export function AuthPage() {
               <div className="text-center">
                 <span className="text-2xl font-bold text-white">$1</span>
                 <p className="text-sm text-gray-400 mt-2">One-time entry fee</p>
+                <p className="text-sm text-gray-400 mt-2">Refundable after launch.</p>
               </div>
               <div>
                 <center>
