@@ -100,10 +100,8 @@ export function AuthPage() {
         
         if (updateError) {
           console.error("Failed to update referrer count:", updateError);
-          // Don't throw here, as the user is already created
         }
       }
-
       localStorage.setItem(
         "tg_auth",
         JSON.stringify({
@@ -113,8 +111,18 @@ export function AuthPage() {
         }),
       );
 
+     
+
       toast.success("Registration successful!");
-      router.push("/profile");
+
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.MainButton.hide();
+        window.Telegram.WebApp.BackButton.hide();
+        window.Telegram.WebApp.navigate('/profile');
+      } else {
+        window.location.reload();
+        window.location.href = '/profile';
+      }
     } catch (error) {
       console.error("❌ Transaction failed:", error);
       toast.error("Transaction failed");
@@ -139,6 +147,9 @@ export function AuthPage() {
       </div>
     );
   }
+
+  console.log(localStorage.getItem('tg_auth'), 'store')
+  
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -185,6 +196,9 @@ export function AuthPage() {
   );
 }
 
+
+
+
 const HomePage = () => {
   const [showAuth, setShowAuth] = useState(false);
 
@@ -200,6 +214,8 @@ const HomePage = () => {
             >
               Get Started
             </Button>
+
+        
           </center>
         </div>
       ) : (
