@@ -29,11 +29,10 @@ export function AuthPage() {
   const ownAddress = "UQBzFGVscxHZU3bHqWALFY5q3rvT64dmv0dn53mmB1AyFU2M";
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
-  const refUrl = `${url}?ref=${user?.username || ''}`;
-  
+  const refUrl = `${url}?ref=${user?.username || ""}`;
 
   const searchParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
+    typeof window !== "undefined" ? window.location.search : "",
   );
   const referredBy = searchParams.get("ref");
 
@@ -45,6 +44,12 @@ export function AuthPage() {
 
     if (!tonConnectUI || !wallet || !wallet.account) {
       toast.error("Please connect your wallet first");
+      return;
+    }
+
+   
+    if (wallet.account.chain !== '-239') {
+      toast.error("Please switch to TON mainnet");
       return;
     }
 
@@ -62,11 +67,8 @@ export function AuthPage() {
             timestamp: Date.now(),
           }),
         );
-        
 
         window.location.reload();
-
-  
 
         //return;
       }
@@ -89,15 +91,15 @@ export function AuthPage() {
         {
           id: crypto.randomUUID(),
           telegram_id: user.id.toString(),
-          telegram_username: user.username || 'anonymous',
-          telegram_photo: user.photoUrl || '',
-          wallet_address: userWallet || '',
+          telegram_username: user.username || "anonymous",
+          telegram_photo: user.photoUrl || "",
+          wallet_address: userWallet || "",
           joined_at: new Date().toISOString(),
           has_paid: true,
           referal_url: refUrl,
           referred_by: referredBy,
           created_at: new Date().toISOString(),
-          publicKey: wallet.account.publicKey || '',
+          publicKey: wallet.account.publicKey || "",
           referal_count: 0,
         },
       ]);
@@ -108,10 +110,13 @@ export function AuthPage() {
       }
 
       if (referredBy) {
-        const { error: updateError } = await supabase.rpc('increment_referral_count', {
-          username: referredBy
-        });
-        
+        const { error: updateError } = await supabase.rpc(
+          "increment_referral_count",
+          {
+            username: referredBy,
+          },
+        );
+
         if (updateError) {
           console.error("Failed to update referrer count:", updateError);
         }
@@ -124,8 +129,6 @@ export function AuthPage() {
           timestamp: Date.now(),
         }),
       );
-
-     
 
       toast.success("Registration successful!");
       window.location.reload();
@@ -163,8 +166,6 @@ export function AuthPage() {
     );
   }
 
-  
-
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-md mx-auto p-4 pt-20">
@@ -180,7 +181,9 @@ export function AuthPage() {
               <div className="text-center">
                 <span className="text-2xl font-bold text-white">1 TON</span>
                 <p className="text-sm text-gray-400 mt-2">One-time entry fee</p>
-                <p className="text-sm text-gray-400 mt-2">Refundable after launch.</p>
+                <p className="text-sm text-gray-400 mt-2">
+                  Refundable after launch.
+                </p>
               </div>
               <div>
                 <center>
@@ -211,9 +214,6 @@ export function AuthPage() {
   );
 }
 
-
-
-
 const HomePage = () => {
   const [showAuth, setShowAuth] = useState(false);
 
@@ -229,8 +229,6 @@ const HomePage = () => {
             >
               Get Started
             </Button>
-
-        
           </center>
         </div>
       ) : (

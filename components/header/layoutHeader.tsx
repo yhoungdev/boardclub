@@ -23,7 +23,7 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
   const initDataState = useSignal(initData.state);
   const user = initDataState?.user;
 
-  const referralUrl = `https://boardclub.vercel.app?ref=${user?.username || ''}`;
+  const referralUrl = `https://boardclub.vercel.app?ref=${user?.username || ""}`;
 
   const handleLogout = async () => {
     try {
@@ -89,7 +89,9 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
           </DialogHeader>
 
           <div className="mt-6">
-            <h3 className="text-sm font-medium text-gray-200 mb-2">Your Referral Link</h3>
+            <h3 className="text-sm font-medium text-gray-200 mb-2">
+              Your Referral Link
+            </h3>
             <div className="bg-gray-800 p-3 rounded-lg flex items-center justify-between gap-2">
               <div className="text-sm text-gray-400 truncate">
                 {referralUrl}

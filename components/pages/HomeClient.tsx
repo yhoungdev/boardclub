@@ -20,7 +20,10 @@ export default function HomeClient() {
   const user = initDataState?.user;
 
   useEffect(() => {
-    if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+    if (
+      typeof window !== "undefined" &&
+      process.env.NODE_ENV === "development"
+    ) {
       const script = document.createElement("script");
       script.src = "https://cdn.jsdelivr.net/npm/eruda";
       script.onload = function () {
@@ -93,11 +96,5 @@ export default function HomeClient() {
     }
   };
 
-  return (
-    isAuthenticated() ? (
-      <HomeIndex />
-    ) : (
-      <HomePage />
-    )
-  );
+  return isAuthenticated() ? <HomeIndex /> : <HomePage />;
 }
