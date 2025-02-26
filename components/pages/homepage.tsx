@@ -26,7 +26,7 @@ export function AuthPage() {
   const user = initDataState?.user;
 
   const userWallet = wallet?.account?.address;
-  const ownAddress = "UQBzFGVscxHZU3bHqWALFY5q3rvT64dmv0dn53mmB1AyFU2M";
+  const ownAddress = "UQCH8lIEKKfgB4YhDcXqa9EZ-mKEpfRRF_m5DqMB7F4mpVc8";
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
   const refUrl = `${url}?ref=${user?.username || ""}`;
