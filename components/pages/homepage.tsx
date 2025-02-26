@@ -26,7 +26,7 @@ export function AuthPage() {
   const user = initDataState?.user;
 
   const userWallet = wallet?.account?.address;
-  const ownAddress = "UQBzFGVscxHZU3bHqWALFY5q3rvT64dmv0dn53mmB1AyFU2M";
+  const ownAddress = "0QC1fRV-kzXjrLmV3Fxe-wtFsbiwXO6ksJl3lNFmbOaxNy4j";
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
   const refUrl = `${url}?ref=${user?.username || ""}`;
@@ -48,10 +48,10 @@ export function AuthPage() {
     }
 
    
-    if (wallet.account.chain !== '-239') {
-      toast.error("Please switch to TON mainnet");
-      return;
-    }
+    // if (wallet.account.chain !== '-239') {
+    //   toast.error("Please switch to TON mainnet");
+    //   return;
+    // }
 
     try {
       setIsDepositing(true);
@@ -82,9 +82,9 @@ export function AuthPage() {
             address: receiverAddress.toString(),
             amount: toNano("1").toString(),
             stateInit: null,
-            payload: "",
+            payload: "te6ccgEBAQEAAgAAAA==", 
           },
-        ],
+        ]
       });
 
       const { error: userError } = await supabase.from("users").insert([
