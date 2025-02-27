@@ -1,4 +1,4 @@
-import { Address, toNano } from "ton-core";
+import { toNano } from "ton-core";
 import { TonConnectUI } from "@tonconnect/ui-react";
 import { ISPRODUCTION } from "@/constant";
 

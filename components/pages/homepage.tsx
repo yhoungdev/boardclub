@@ -31,11 +31,12 @@ export function AuthPage() {
   const userWallet = wallet?.account?.address;
   const ownAddress = RECEIPIANTADDRESS;
 
-
-  const startParam = typeof window !== 'undefined' 
-    ? new URLSearchParams(window.Telegram?.WebApp?.initData || "").get("start") 
-    : null;
-
+  const startParam =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.Telegram?.WebApp?.initData || "").get(
+          "start",
+        )
+      : null;
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
   const refUrl = `${url}?ref=${user?.username || ""}`;
@@ -44,15 +45,10 @@ export function AuthPage() {
     typeof window !== "undefined" ? window.location.search : "",
   );
 
- 
+  const referredBy = startParam || searchParams.get("ref");
 
-
-    
-    const referredBy = startParam || searchParams.get("ref");
-
- 
   const [referralCode, setReferralCode] = useState("");
-  
+
   const handleDeposit = async () => {
     if (!user) {
       toast.error("User not authenticated");
@@ -64,7 +60,10 @@ export function AuthPage() {
       return;
     }
 
-    if (process.env.NODE_ENV === 'production' && wallet.account.chain !== '-239') {
+    if (
+      process.env.NODE_ENV === "production" &&
+      wallet.account.chain !== "-239"
+    ) {
       toast.error("Please switch to TON mainnet");
       return;
     }
@@ -158,7 +157,7 @@ export function AuthPage() {
                   Refundable after launch.
                 </p>
               </div>
-              
+
               {/* Add referral code input */}
               <div className="space-y-2">
                 <p className="text-sm text-gray-400">Have a referral code?</p>
@@ -176,7 +175,7 @@ export function AuthPage() {
                   <TonConnectButton />
                 </center>
               </div>
-              
+
               {wallet && (
                 <Button
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
