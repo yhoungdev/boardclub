@@ -30,10 +30,7 @@ const IndexApplicationProvider = ({ children }: { children: ReactNode }) => {
     : "https://127.0.0.1:3000/manifest.json";
 
   return (
-    <TonConnectUIProvider
-      manifestUrl={manifestUrl}
-      networkName="mainnet"
-    >
+    <TonConnectUIProvider manifestUrl={manifestUrl} networkName="mainnet">
       <NetworkChecker />
       <AuthCheck>{children}</AuthCheck>
     </TonConnectUIProvider>

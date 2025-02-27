@@ -21,18 +21,19 @@ export default function Leaderboard() {
     const fetchUsers = async () => {
       const { data, error } = await supabase
         .from("users")
-        .select(`
+        .select(
+          `
           id,
           telegram_username,
           telegram_photo,
           referred_by
-        `)
-        .not('telegram_username', 'is', null);
+        `,
+        )
+        .not("telegram_username", "is", null);
 
       if (error) {
         console.error("Error fetching users:", error);
       } else {
-      
         const referralCounts = data.reduce((acc, user) => {
           if (user.referred_by) {
             acc[user.referred_by] = (acc[user.referred_by] || 0) + 1;
@@ -40,16 +41,15 @@ export default function Leaderboard() {
           return acc;
         }, {});
 
-
         const formattedUsers = data
-          .map(user => ({
+          .map((user) => ({
             id: user.id,
             name: user.telegram_username,
             avatar: user.telegram_photo,
-            referrals: referralCounts[user.telegram_username] || 0
+            referrals: referralCounts[user.telegram_username] || 0,
           }))
-          .sort((a, b) => b.referrals - a.referrals) 
-          .slice(0, 50); 
+          .sort((a, b) => b.referrals - a.referrals)
+          .slice(0, 50);
 
         setTopUsers(formattedUsers);
       }
@@ -83,21 +83,31 @@ export default function Leaderboard() {
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback>{user.name?.[0]?.toUpperCase()}</AvatarFallback>
+                    <AvatarFallback>
+                      {user.name?.[0]?.toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">@{user.name}</span>
+                      <span className="font-medium text-white text-sm">
+                        @{user.name}
+                      </span>
                       <span className="text-yellow-500">
-                        👥 {user.referrals}
+                        👥 {user?.referrals}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm text-gray-400">
-                      <span>Referral Count</span>
+                      <span className="text-xs">Referral Count</span>
                       <div className="flex items-center gap-2">
-                        {index === 0 && <span className="text-yellow-500">🥇</span>}
-                        {index === 1 && <span className="text-gray-400">🥈</span>}
-                        {index === 2 && <span className="text-orange-400">🥉</span>}
+                        {index === 0 && (
+                          <span className="text-yellow-500">🥇</span>
+                        )}
+                        {index === 1 && (
+                          <span className="text-gray-400">🥈</span>
+                        )}
+                        {index === 2 && (
+                          <span className="text-orange-400">🥉</span>
+                        )}
                         <span>#{index + 1}</span>
                       </div>
                     </div>

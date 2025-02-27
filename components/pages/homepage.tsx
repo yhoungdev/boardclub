@@ -60,7 +60,7 @@ export function AuthPage() {
       return;
     }
 
-    if (wallet.account.chain !== '-239') {
+    if (wallet.account.chain !== "-239") {
       toast.error("Please switch to TON mainnet");
       return;
     }
