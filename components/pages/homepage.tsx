@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation";
 import Onboarding from "../onboarding";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { toast } from "sonner";
+import { RECEIPIANTADDRESS } from "@/constant";
+import { sendPayment } from "@/lib/payment";
 
 export function AuthPage() {
   const router = useRouter();
@@ -26,7 +28,7 @@ export function AuthPage() {
   const user = initDataState?.user;
 
   const userWallet = wallet?.account?.address;
-  const ownAddress = "UQCH8lIEKKfgB4YhDcXqa9EZ-mKEpfRRF_m5DqMB7F4mpVc8";
+  const ownAddress = RECEIPIANTADDRESS;
 
   const url = typeof window !== "undefined" ? window.location.origin : "";
   const refUrl = `${url}?ref=${user?.username || ""}`;
@@ -47,18 +49,16 @@ export function AuthPage() {
       return;
     }
 
-   
-    if (wallet.account.chain !== '-239') {
-      toast.error("Please switch to TON mainnet");
-      return;
-    }
+    // if (wallet.account.chain !== '-239') {
+    //   toast.error("Please switch to TON mainnet");
+    //   return;
+    // }
 
     try {
       setIsDepositing(true);
 
       const existingUser = await checkExistingUser(user.id.toString());
       if (existingUser) {
-        // toast.error("User already registered");
         localStorage.setItem(
           "tg_auth",
           JSON.stringify({
@@ -67,27 +67,11 @@ export function AuthPage() {
             timestamp: Date.now(),
           }),
         );
-
         window.location.reload();
-
-        //return;
       }
 
-      const receiverAddress = Address.parse(ownAddress);
-
-      await tonConnectUI.sendTransaction({
-        validUntil: Math.floor(Date.now() / 1000) + 300,
-        messages: [
-          {
-            address: receiverAddress.toString(),
-            amount: toNano("1").toString(),
-            stateInit: null,
-            payload: "",
-            bounce: false  ,
-            
-          },
-        ],
-      });
+      // Use only sendPayment, remove the duplicate transaction
+      await sendPayment(tonConnectUI, ownAddress);
 
       const { error: userError } = await supabase.from("users").insert([
         {
@@ -134,15 +118,6 @@ export function AuthPage() {
 
       toast.success("Registration successful!");
       window.location.reload();
-      //window.location.href = '/profile';
-
-      // if (window.Telegram?.WebApp) {
-      //   window.Telegram.WebApp.MainButton.hide();
-      //   window.Telegram.WebApp.BackButton.hide();
-      //   window.Telegram.WebApp.navigate('/profile');
-      // } else {
-
-      // }
     } catch (error) {
       console.error("❌ Transaction failed:", error);
       toast.error("Transaction failed");

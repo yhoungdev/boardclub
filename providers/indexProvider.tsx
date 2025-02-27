@@ -27,12 +27,12 @@ const NetworkChecker = () => {
 const IndexApplicationProvider = ({ children }: { children: ReactNode }) => {
   const manifestUrl = ISPRODUCTION
     ? "https://boardclub.vercel.app/manifest.json"
-    : "http://127.0.0.1:3000/manifest.json";
+    : "https://127.0.0.1:3000/manifest.json";
 
   return (
-    <TonConnectUIProvider manifestUrl={manifestUrl} 
-    // networkName="mainnet"
-    
+    <TonConnectUIProvider
+      manifestUrl={manifestUrl}
+      // networkName="mainnet"
     >
       <NetworkChecker />
       <AuthCheck>{children}</AuthCheck>
