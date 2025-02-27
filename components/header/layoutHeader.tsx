@@ -13,17 +13,48 @@ import { toast } from "sonner";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Copy } from "lucide-react";
+import { useEffect } from "react";
+import { supabase } from "@/config/supabase";
 
 export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
+  const [referralCode, setReferralCode] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
 
   const initDataState = useSignal(initData.state);
   const user = initDataState?.user;
 
-  const referralUrl = `https://t.me/kryptronitebot?start=${user?.username || ""}`;
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user?.id) {
+        const { data } = await supabase
+          .from("users")
+          .select("referral_code, telegram_username")
+          .eq("telegram_id", user.id.toString())
+          .single();
+
+        if (data) {
+          setReferralCode(data.referral_code);
+          setUsername(data.telegram_username);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
+  const copyToClipboard = () => {
+    const inviteText = `${username} is inviting you to join Kryptronite, use their INVITE code ${referralCode} to sign in`;
+    navigator.clipboard.writeText(inviteText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast.success("Referral message copied!");
+  };
+
+  const referralUrl = `https://t.me/kryptronitebot?start=${referralCode}`;
 
   const handleLogout = async () => {
     try {
@@ -39,13 +70,6 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
       setIsLoggingOut(false);
       setOpen(false);
     }
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(referralUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-    toast.success("Referral link copied!");
   };
 
   return (
@@ -90,11 +114,11 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
 
           <div className="mt-6">
             <h3 className="text-sm font-medium text-gray-200 mb-2">
-              Your Referral Link
+              Your Referral Code
             </h3>
             <div className="bg-gray-800 p-3 rounded-lg flex items-center justify-between gap-2">
               <div className="text-sm text-gray-400 truncate">
-                {referralUrl}
+                {referralCode || "Loading..."}
               </div>
               <Button
                 variant="ghost"
