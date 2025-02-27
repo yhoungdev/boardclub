@@ -79,7 +79,7 @@ export default function SquadPage() {
 
   useEffect(() => {
     const fetchReferrals = async () => {
-      if (!userData?.telegram_username) return;
+      if (!userData?.referral_code) return;
 
       const { data, error } = await supabase
         .from("users")
@@ -91,7 +91,7 @@ export default function SquadPage() {
           joined_at as joinedDate
         `,
         )
-        .eq("referred_by", userData.telegram_username);
+        .eq("referred_by", userData.referral_code);
 
       if (error) {
         console.error("Error fetching referrals:", error);
@@ -199,32 +199,52 @@ export default function SquadPage() {
           <div className="mt-6">
             <h3 className="text-lg font-semibold mb-4">Squad Members</h3>
             <div className="space-y-4">
-              {referrals.map((referral) => (
-                <div
-                  key={referral.id}
-                  className="flex items-center justify-between bg-gray-800/30 p-3 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={referral.avatar} />
-                      <AvatarFallback>
-                        {referral.name?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">@{referral.name}</p>
-                      <p className="text-sm text-gray-400">
-                        Joined{" "}
-                        {new Date(referral.joinedDate).toLocaleDateString()}
-                      </p>
+              {referrals?.length > 0 ? (
+                referrals?.map((referral) => (
+                  <div
+                    key={referral.id}
+                    className="flex items-center justify-between bg-gray-800/30 p-3 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Avatar>
+                        <AvatarImage src={referral?.avatar} />
+                        <AvatarFallback>
+                          {referral?.name?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">@{referral?.name}</p>
+                        <p className="text-sm text-gray-400">
+                          Joined{" "}
+                          {new Date(referral.joinedDate).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-center text-gray-400 mb-4">
+                    No squad members yet. Share your link to grow your team!
+                  </p>
+                  {[
+                    { icon: "🥉", name: "Bronze", range: "0 - 4" },
+                    { icon: "🥈", name: "Silver", range: "5 - 19" },
+                    { icon: "🥇", name: "Gold", range: "20 - 49" },
+                    { icon: "🏆", name: "Platinum", range: "50 - 99" },
+                    { icon: "💎", name: "Diamond", range: "100+" },
+                  ].map((level, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="flex items-center gap-2 text-white">
+                        {level.icon} {level.name}
+                      </span>
+                      <span className="text-white">{level.range}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              {referrals.length === 0 && (
-                <p className="text-center text-gray-400 py-4">
-                  No squad members yet. Share your link to grow your team!
-                </p>
               )}
             </div>
           </div>
