@@ -9,7 +9,7 @@ import {
   useTonConnectUI,
   useTonWallet,
 } from "@tonconnect/ui-react";
-import { Address, toNano } from "ton-core";
+
 import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
 import Onboarding from "../onboarding";
@@ -17,6 +17,7 @@ import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { toast } from "sonner";
 import { RECEIPIANTADDRESS } from "@/constant";
 import { sendPayment } from "@/lib/payment";
+import { createUser } from "@/services/user";
 
 export function AuthPage() {
   const router = useRouter();
@@ -30,13 +31,23 @@ export function AuthPage() {
   const userWallet = wallet?.account?.address;
   const ownAddress = RECEIPIANTADDRESS;
 
+  const startParam =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.Telegram?.WebApp?.initData || "").get(
+          "start",
+        )
+      : null;
+
   const url = typeof window !== "undefined" ? window.location.origin : "";
   const refUrl = `${url}?ref=${user?.username || ""}`;
 
   const searchParams = new URLSearchParams(
     typeof window !== "undefined" ? window.location.search : "",
   );
-  const referredBy = searchParams.get("ref");
+
+  const referredBy = startParam || searchParams.get("ref");
+
+  const [referralCode, setReferralCode] = useState("");
 
   const handleDeposit = async () => {
     if (!user) {
@@ -68,44 +79,26 @@ export function AuthPage() {
           }),
         );
         window.location.reload();
+        return;
       }
 
       await sendPayment(tonConnectUI, ownAddress);
 
-      const { error: userError } = await supabase.from("users").insert([
-        {
-          id: crypto.randomUUID(),
-          telegram_id: user.id.toString(),
-          telegram_username: user.username || "anonymous",
-          telegram_photo: user.photoUrl || "",
-          wallet_address: userWallet || "",
-          joined_at: new Date().toISOString(),
-          has_paid: true,
-          referal_url: refUrl,
-          referred_by: referredBy,
-          created_at: new Date().toISOString(),
+      try {
+        await createUser({
+          telegramId: user.id.toString(),
+          username: user.username || "anonymous",
+          photoUrl: user.photoUrl || "",
+          walletAddress: userWallet || "",
           publicKey: wallet.account.publicKey || "",
-          referal_count: 0,
-        },
-      ]);
-
-      if (userError) {
-        toast.error("Failed to create user");
-        throw userError;
+          referredBy: referralCode || referredBy,
+        });
+      } catch (createError: any) {
+        console.error("User creation error details:", createError);
+        toast.error(createError.message || "Failed to create user");
+        throw createError;
       }
 
-      if (referredBy) {
-        const { error: updateError } = await supabase.rpc(
-          "increment_referral_count",
-          {
-            username: referredBy,
-          },
-        );
-
-        if (updateError) {
-          console.error("Failed to update referrer count:", updateError);
-        }
-      }
       localStorage.setItem(
         "tg_auth",
         JSON.stringify({
@@ -161,11 +154,25 @@ export function AuthPage() {
                   Refundable after launch.
                 </p>
               </div>
+
+              {/* Add referral code input */}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-400">Have a referral code?</p>
+                <input
+                  type="text"
+                  placeholder="Enter referral code"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+
               <div>
                 <center>
                   <TonConnectButton />
                 </center>
               </div>
+
               {wallet && (
                 <Button
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"

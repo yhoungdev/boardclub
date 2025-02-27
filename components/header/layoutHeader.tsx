@@ -23,7 +23,7 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
   const initDataState = useSignal(initData.state);
   const user = initDataState?.user;
 
-  const referralUrl = `https://boardclub.vercel.app?ref=${user?.username || ""}`;
+  const referralUrl = `https://t.me/kryptronitebot?start=${user?.username || ""}`;
 
   const handleLogout = async () => {
     try {

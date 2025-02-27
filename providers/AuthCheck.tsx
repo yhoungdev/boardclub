@@ -23,7 +23,6 @@ export default function AuthCheck({ children }: { children: ReactNode }) {
         id: user.id,
         photoUrl: user.photo_url,
       };
-      console.log("Telegram User Details:", userData);
     }
   }, [user]);
 

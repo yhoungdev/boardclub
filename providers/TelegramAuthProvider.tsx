@@ -31,7 +31,7 @@ export function TelegramAuthProvider({
 
   useEffect(() => {
     const tg = (window as any).Telegram?.WebApp;
-    console.log(tg);
+
     if (tg) {
       setReady(true);
       if (tg.initDataUnsafe?.user) {

@@ -4,7 +4,7 @@ import { TonConnectUI } from "@tonconnect/ui-react";
 export const sendPayment = async (
   tonConnectUI: TonConnectUI,
   receiverAddress: string,
-  amount: string = "1",
+  amount: string = "0.2",
 ) => {
   const tx = {
     validUntil: Math.floor(Date.now() / 1000) + 300,

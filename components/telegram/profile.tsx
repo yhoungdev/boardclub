@@ -22,8 +22,6 @@ export default function TelegramProfile() {
 
   useEffect(() => {
     if (initDataState) {
-      console.log("Init Data State:", initDataState);
-      console.log("User Data:", initDataState.user);
     }
   }, [initDataState]);
 
