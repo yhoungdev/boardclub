@@ -95,14 +95,18 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
                 <div className="px-2 py-4">
                   <div className="space-y-2">
                     <a
-                      href="/jobs"
+                      href="https://forms.gle/LKj2SJFwpTyRmBCd6"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
                     >
                       <Briefcase className="h-5 w-5" />
                       <span>Jobs</span>
                     </a>
                     <a
-                      href="/funding"
+                      href="https://forms.gle/yAEg854gA2Z2hKqT8"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
                     >
                       <Wallet className="h-5 w-5" />
