@@ -204,7 +204,7 @@ export default function SquadPage() {
           </div>
 
           <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-4">Squad Members</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white">Squad Members</h3>
             <div className="space-y-4">
               {referrals?.length > 0 ? (
                 referrals?.map((referral) => (
