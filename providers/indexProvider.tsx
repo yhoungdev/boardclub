@@ -29,8 +29,10 @@ const IndexApplicationProvider = ({ children }: { children: ReactNode }) => {
     ? "https://boardclub.vercel.app/manifest.json"
     : "https://127.0.0.1:3000/manifest.json";
 
+    const networkName = ISPRODUCTION ? "mainnet" : "testnet";
+
   return (
-    <TonConnectUIProvider manifestUrl={manifestUrl} networkName="mainnet">
+    <TonConnectUIProvider manifestUrl={manifestUrl} networkName={networkName}>
       <NetworkChecker />
       <AuthCheck>{children}</AuthCheck>
     </TonConnectUIProvider>
