@@ -70,7 +70,6 @@ export function AuthPage() {
         window.location.reload();
       }
 
-      // Use only sendPayment, remove the duplicate transaction
       await sendPayment(tonConnectUI, ownAddress);
 
       const { error: userError } = await supabase.from("users").insert([
