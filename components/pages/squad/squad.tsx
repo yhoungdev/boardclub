@@ -83,20 +83,24 @@ export default function SquadPage() {
 
       const { data, error } = await supabase
         .from("users")
-        .select(
-          `
+        .select(`
           id,
-          telegram_username as name,
-          telegram_photo as avatar,
-          joined_at as joinedDate
-        `,
-        )
+          telegram_username,
+          telegram_photo,
+          joined_at
+        `)
         .eq("referred_by", userData.referral_code);
 
       if (error) {
         console.error("Error fetching referrals:", error);
       } else {
-        setReferrals(data || []);
+        const formattedReferrals = data?.map(user => ({
+          id: user.id,
+          name: user.telegram_username,
+          avatar: user.telegram_photo,
+          joinedDate: user.joined_at
+        }));
+        setReferrals(formattedReferrals || []);
       }
     };
 
@@ -106,7 +110,7 @@ export default function SquadPage() {
   }, [userData]);
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(referralUrl);
+    navigator?.clipboard.writeText(referralUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -119,6 +123,8 @@ export default function SquadPage() {
   //   );
   // }
 
+
+  console.log(referrals)
   return (
     <div className="min-h-screen bg-black text-white p-4">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -127,7 +133,7 @@ export default function SquadPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-gray-400">Total Members</p>
-              <p className="text-3xl font-bold">{referrals.length}</p>
+              <p className="text-3xl font-bold">{referrals?.length}</p>
             </div>
             <Button
               onClick={copyToClipboard}
