@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
-
+import moment from "moment";
 interface Referral {
   id: number;
   name: string;
@@ -83,22 +83,24 @@ export default function SquadPage() {
 
       const { data, error } = await supabase
         .from("users")
-        .select(`
+        .select(
+          `
           id,
           telegram_username,
           telegram_photo,
           joined_at
-        `)
+        `,
+        )
         .eq("referred_by", userData.referral_code);
 
       if (error) {
         console.error("Error fetching referrals:", error);
       } else {
-        const formattedReferrals = data?.map(user => ({
+        const formattedReferrals = data?.map((user) => ({
           id: user.id,
           name: user.telegram_username,
           avatar: user.telegram_photo,
-          joinedDate: user.joined_at
+          joinedDate: user.joined_at,
         }));
         setReferrals(formattedReferrals || []);
       }
@@ -123,8 +125,7 @@ export default function SquadPage() {
   //   );
   // }
 
-
-  console.log(referrals)
+  console.log(referrals);
   return (
     <div className="min-h-screen bg-black text-white p-4">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -219,38 +220,41 @@ export default function SquadPage() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">@{referral?.name}</p>
+                        <p className="font-medium text-white">
+                          @{referral?.name}
+                        </p>
                         <p className="text-sm text-gray-400">
-                          Joined{" "}
-                          {new Date(referral.joinedDate).toLocaleDateString()}
+                          Joined {moment(referral?.joinedDate).fromNow()}
                         </p>
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="space-y-4">
+                <>
                   <p className="text-center text-gray-400 mb-4">
                     No squad members yet. Share your link to grow your team!
                   </p>
-                  {[
-                    { icon: "🥉", name: "Bronze", range: "0 - 4" },
-                    { icon: "🥈", name: "Silver", range: "5 - 19" },
-                    { icon: "🥇", name: "Gold", range: "20 - 49" },
-                    { icon: "🏆", name: "Platinum", range: "50 - 99" },
-                    { icon: "💎", name: "Diamond", range: "100+" },
-                  ].map((level, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <span className="flex items-center gap-2 text-white">
-                        {level.icon} {level.name}
-                      </span>
-                      <span className="text-white">{level.range}</span>
-                    </div>
-                  ))}
-                </div>
+                  <div className="space-y-4">
+                    {[
+                      { icon: "🥉", name: "Bronze", range: "0 - 4" },
+                      { icon: "🥈", name: "Silver", range: "5 - 19" },
+                      { icon: "🥇", name: "Gold", range: "20 - 49" },
+                      { icon: "🏆", name: "Platinum", range: "50 - 99" },
+                      { icon: "💎", name: "Diamond", range: "100+" },
+                    ].map((level, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <span className="flex items-center gap-2 text-white">
+                          {level.icon} {level.name}
+                        </span>
+                        <span className="text-white">{level.range}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </div>
