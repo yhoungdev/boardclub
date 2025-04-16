@@ -17,13 +17,14 @@ import { useEffect } from "react";
 import { supabase } from "@/config/supabase";
 import { MenuIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Briefcase, Wallet } from "lucide-react";
+import { Briefcase, Wallet, LineChart } from "lucide-react"; 
+import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 
 export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [hasPaid, setHasPaid] = useState(false);
+  const hasPaid = usePaymentStatus();
   const router = useRouter();
   const [referralCode, setReferralCode] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -36,14 +37,13 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
       if (user?.id) {
         const { data } = await supabase
           .from("users")
-          .select("referral_code, telegram_username, has_paid")
+          .select("referral_code, telegram_username")
           .eq("telegram_id", user.id.toString())
           .single();
 
         if (data) {
           setReferralCode(data.referral_code);
           setUsername(data.telegram_username);
-          setHasPaid(data.has_paid);
         }
       }
     };
@@ -97,24 +97,21 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
                 <nav className="flex-1">
                   <div className="px-2 py-4">
                     <div className="space-y-2">
-                      <a
-                        href="https://forms.gle/LKj2SJFwpTyRmBCd6"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
-                      >
+                      <div className="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg">
                         <Briefcase className="h-5 w-5" />
                         <span>Jobs</span>
-                      </a>
-                      <a
-                        href="https://forms.gle/yAEg854gA2Z2hKqT8"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
-                      >
+                        <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Coming Soon</span>
+                      </div>
+                      <div className="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg">
                         <Wallet className="h-5 w-5" />
                         <span>Funding</span>
-                      </a>
+                        <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Coming Soon</span>
+                      </div>
+                      <div className="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg">
+                        <LineChart className="h-5 w-5" />
+                        <span>Sigmart</span>
+                        <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Coming Soon</span>
+                      </div>
                     </div>
                   </div>
                 </nav>

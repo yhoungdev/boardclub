@@ -44,12 +44,11 @@ export const createUser = async ({
           telegram_photo: photoUrl,
           wallet_address: walletAddress,
           joined_at: new Date().toISOString(),
-          has_paid: true,
+          has_paid: false,
           referal_url: refUrl,
           referred_by: referredBy || null,
           referral_code: newReferralCode,
           created_at: new Date().toISOString(),
-          // publicKey: publicKey,
           referal_count: 0,
         },
       ])

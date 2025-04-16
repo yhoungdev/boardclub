@@ -9,10 +9,12 @@ import { RECEIPIANTADDRESS } from "@/constant";
 import { sendPayment } from "@/lib/payment";
 import { TonConnectButton } from "@tonconnect/ui-react";
 import { supabase } from "@/config/supabase";
+import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 const Benefits = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
+  const hasPaid = usePaymentStatus();
 
   const handlePayment = async () => {
     if (!tonConnectUI || !wallet || !wallet.account) {
@@ -20,10 +22,7 @@ const Benefits = () => {
       return;
     }
 
-    if (
-      process.env.NODE_ENV === "production" &&
-      wallet.account.chain !== "-239"
-    ) {
+    if (process.env.NODE_ENV === "production" && wallet.account.chain !== "-239") {
       toast.error("Please switch to TON mainnet");
       return;
     }
@@ -43,6 +42,7 @@ const Benefits = () => {
         return;
       }
 
+      window.location.reload();
       toast.success("Payment successful!");
     } catch (error) {
       console.error("❌ Payment failed:", error);
@@ -51,6 +51,22 @@ const Benefits = () => {
       setIsProcessing(false);
     }
   };
+
+
+  if (hasPaid) {
+    return (
+      <div className="min-h-screen bg-black text-white p-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent mb-4">
+            Welcome to Kryptronite
+          </h1>
+          <p className="text-gray-400">You have successfully joined our community!</p>
+
+        
+        </div>
+      </div>
+    );
+  }
 
   const benefits = [
     {
