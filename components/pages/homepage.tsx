@@ -1,11 +1,9 @@
 "use client";
-import { useEffect } from "react";
-import { Wallet, Coins, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
-  TonConnectButton,
+
   useTonConnectUI,
   useTonWallet,
 } from "@tonconnect/ui-react";
@@ -21,7 +19,7 @@ import { createUser } from "@/services/user";
 
 export function AuthPage() {
   const router = useRouter();
-  const [isDepositing, setIsDepositing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
 
@@ -55,21 +53,8 @@ export function AuthPage() {
       return;
     }
 
-    if (!tonConnectUI || !wallet || !wallet.account) {
-      toast.error("Please connect your wallet first");
-      return;
-    }
-
-    if (
-      process.env.NODE_ENV === "production" &&
-      wallet.account.chain !== "-239"
-    ) {
-      toast.error("Please switch to TON mainnet");
-      return;
-    }
-
     try {
-      setIsDepositing(true);
+      setIsLoading(true);
 
       const existingUser = await checkExistingUser(user.id.toString());
       if (existingUser) {
@@ -81,11 +66,10 @@ export function AuthPage() {
             timestamp: Date.now(),
           }),
         );
+        toast.success(`Welcome back, ${existingUser.username || 'User'}!`);
         window.location.reload();
         return;
       }
-
-      await sendPayment(tonConnectUI, ownAddress);
 
       try {
         await createUser({
@@ -93,7 +77,7 @@ export function AuthPage() {
           username: user.username || "anonymous",
           photoUrl: user.photoUrl || "",
           walletAddress: userWallet || "",
-          publicKey: wallet.account.publicKey || "",
+          publicKey: wallet?.account?.publicKey || "",
           referredBy: referralCode || referredBy,
         });
       } catch (createError: any) {
@@ -114,10 +98,10 @@ export function AuthPage() {
       toast.success("Registration successful!");
       window.location.reload();
     } catch (error) {
-      console.error("❌ Transaction failed:", error);
-      toast.error("Transaction failed");
+      console.error("❌ Registration failed:", error);
+      toast.error("Registration failed");
     } finally {
-      setIsDepositing(false);
+      setIsLoading(false);
     }
   };
 
@@ -145,20 +129,12 @@ export function AuthPage() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
             Welcome to Kryptronite
           </h1>
-          <p className="text-gray-400">Start your journey with just 1 TON</p>
+          <p className="text-gray-400">Join our community</p>
         </div>
         <Card className="bg-gray-900/50 border-0 p-6">
           <div className="space-y-6">
             <div className="space-y-4">
-              <div className="text-center">
-                <span className="text-2xl font-bold text-white">1 TON</span>
-                <p className="text-sm text-gray-400 mt-2">One-time entry fee</p>
-                <p className="text-sm text-gray-400 mt-2">
-                  Refundable after launch.
-                </p>
-              </div>
-
-              {/* Add referral code input */}
+             
               <div className="space-y-2">
                 <p className="text-sm text-gray-400">Have a referral code?</p>
                 <input
@@ -170,31 +146,16 @@ export function AuthPage() {
                 />
               </div>
 
-              <div>
-                <center>
-                  <TonConnectButton />
-                </center>
-              </div>
-
-              {wallet && (
-                <Button
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
-                  onClick={handleDeposit}
-                  disabled={isDepositing}
-                >
-                  {isDepositing ? "Processing Payment..." : "Pay Entry Fee"}
-                </Button>
-              )}
+              <Button
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
+                onClick={handleDeposit}
+                disabled={isLoading}
+              >
+                {isLoading ? "Please wait..." : "Continue"}
+              </Button>
             </div>
           </div>
         </Card>
-
-        <div className="mt-8 text-center">
-          <div className="flex items-center justify-center gap-2 text-gray-400">
-            <Coins className="h-4 w-4" />
-            <span className="text-sm">Secure Payment Gateway</span>
-          </div>
-        </div>
       </div>
     </div>
   );
