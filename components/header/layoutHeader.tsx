@@ -23,6 +23,7 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [hasPaid, setHasPaid] = useState(false);
   const router = useRouter();
   const [referralCode, setReferralCode] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -35,13 +36,14 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
       if (user?.id) {
         const { data } = await supabase
           .from("users")
-          .select("referral_code, telegram_username")
+          .select("referral_code, telegram_username, has_paid")
           .eq("telegram_id", user.id.toString())
           .single();
 
         if (data) {
           setReferralCode(data.referral_code);
           setUsername(data.telegram_username);
+          setHasPaid(data.has_paid);
         }
       }
     };
@@ -77,47 +79,49 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
     <div className="text-white p-4 flex justify-between items-center border-b border-gray-800/50">
       <h1 className="font-semibold text-lg">{title}</h1>
       <div className="flex items-center gap-3">
-        <Sheet>
-          <SheetTrigger asChild>
-            <div className="flex rounded-md items-center justify-center bg-gray-800 px-1 py-1">
-              <MenuIcon className="cursor-pointer" />
-            </div>
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="w-[300px] bg-gray-900 border-gray-800 p-0"
-          >
-            <div className="flex flex-col h-full">
-              <div className="p-4 border-b border-gray-800">
-                <h2 className="text-lg font-semibold text-white">Menu</h2>
+        {hasPaid && (
+          <Sheet>
+            <SheetTrigger asChild>
+              <div className="flex rounded-md items-center justify-center bg-gray-800 px-1 py-1">
+                <MenuIcon className="cursor-pointer" />
               </div>
-              <nav className="flex-1">
-                <div className="px-2 py-4">
-                  <div className="space-y-2">
-                    <a
-                      href="https://forms.gle/LKj2SJFwpTyRmBCd6"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
-                    >
-                      <Briefcase className="h-5 w-5" />
-                      <span>Jobs</span>
-                    </a>
-                    <a
-                      href="https://forms.gle/yAEg854gA2Z2hKqT8"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
-                    >
-                      <Wallet className="h-5 w-5" />
-                      <span>Funding</span>
-                    </a>
-                  </div>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="w-[300px] bg-gray-900 border-gray-800 p-0"
+            >
+              <div className="flex flex-col h-full">
+                <div className="p-4 border-b border-gray-800">
+                  <h2 className="text-lg font-semibold text-white">Menu</h2>
                 </div>
-              </nav>
-            </div>
-          </SheetContent>
-        </Sheet>
+                <nav className="flex-1">
+                  <div className="px-2 py-4">
+                    <div className="space-y-2">
+                      <a
+                        href="https://forms.gle/LKj2SJFwpTyRmBCd6"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
+                      >
+                        <Briefcase className="h-5 w-5" />
+                        <span>Jobs</span>
+                      </a>
+                      <a
+                        href="https://forms.gle/yAEg854gA2Z2hKqT8"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
+                      >
+                        <Wallet className="h-5 w-5" />
+                        <span>Funding</span>
+                      </a>
+                    </div>
+                  </div>
+                </nav>
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
 
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
