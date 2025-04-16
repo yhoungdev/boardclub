@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
+import Benefits from "./Benefits";
 
 const CountDown = () => {
   const targetDate = new Date(Date.now() + (21 * 24 * 60 * 60 * 1000));
@@ -38,7 +39,7 @@ const CountDown = () => {
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-      <div className="text-center">
+      {/* <div className="text-center">
         <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
           Launch Coming Soon
         </h1>
@@ -68,7 +69,8 @@ const CountDown = () => {
             <div className="text-sm text-gray-400">Seconds</div>
           </Card>
         </div>
-      </div>
+      </div> */}
+      <Benefits/>
     </div>
   );
 };
