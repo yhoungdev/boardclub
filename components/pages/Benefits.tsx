@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { RECEIPIANTADDRESS } from "@/constant";
 import { sendPayment } from "@/lib/payment";
 import { TonConnectButton } from "@tonconnect/ui-react";
+import { supabase } from "@/config/supabase";
 const Benefits = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [tonConnectUI] = useTonConnectUI();
@@ -19,7 +20,10 @@ const Benefits = () => {
       return;
     }
 
-    if (process.env.NODE_ENV === "production" && wallet.account.chain !== "-239") {
+    if (
+      process.env.NODE_ENV === "production" &&
+      wallet.account.chain !== "-239"
+    ) {
       toast.error("Please switch to TON mainnet");
       return;
     }
@@ -27,6 +31,18 @@ const Benefits = () => {
     try {
       setIsProcessing(true);
       await sendPayment(tonConnectUI, RECEIPIANTADDRESS);
+
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({ has_paid: true })
+        .eq("wallet_address", wallet.account.address);
+
+      if (updateError) {
+        console.error("Failed to update payment status:", updateError);
+        toast.error("Payment recorded but failed to update status");
+        return;
+      }
+
       toast.success("Payment successful!");
     } catch (error) {
       console.error("❌ Payment failed:", error);
@@ -40,28 +56,28 @@ const Benefits = () => {
     {
       icon: <Coins className="w-6 h-6 text-purple-400" />,
       title: "Free $10,000 Trading Account",
-      description: "Access to trading accounts with 70/30 profit sharing"
+      description: "Access to trading accounts with 70/30 profit sharing",
     },
     {
       icon: <Users className="w-6 h-6 text-purple-400" />,
       title: "Global Trading Community",
-      description: "Connect with traders worldwide"
+      description: "Connect with traders worldwide",
     },
     {
       icon: <LineChart className="w-6 h-6 text-purple-400" />,
       title: "Premium Signal Marketplace",
-      description: "3 months access + Pay-Per-Profit signals afterwards"
+      description: "3 months access + Pay-Per-Profit signals afterwards",
     },
     {
       icon: <Briefcase className="w-6 h-6 text-purple-400" />,
       title: "Web3 Job Access",
-      description: "Get paired with jobs (15% commission for 6 months)"
+      description: "Get paired with jobs (15% commission for 6 months)",
     },
     {
       icon: <DollarSign className="w-6 h-6 text-purple-400" />,
       title: "Signal Selling Platform",
-      description: "Sell signals from $0.1 to $10 per profitable signal"
-    }
+      description: "Sell signals from $0.1 to $10 per profitable signal",
+    },
   ];
 
   return (
@@ -96,7 +112,9 @@ const Benefits = () => {
               onClick={handlePayment}
               disabled={isProcessing}
             >
-              {isProcessing ? "Processing Payment..." : "Join the Waiting Room (1 TON)"}
+              {isProcessing
+                ? "Processing Payment..."
+                : "Join the Waiting Room (1 TON)"}
             </Button>
           )}
         </div>

@@ -2,11 +2,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import {
-
-  useTonConnectUI,
-  useTonWallet,
-} from "@tonconnect/ui-react";
+import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 
 import { supabase } from "@/config/supabase";
 import { useRouter } from "next/navigation";
@@ -66,7 +62,7 @@ export function AuthPage() {
             timestamp: Date.now(),
           }),
         );
-        toast.success(`Welcome back, ${existingUser.username || 'User'}!`);
+        toast.success(`Welcome back, ${existingUser.username || "User"}!`);
         window.location.reload();
         return;
       }
@@ -134,7 +130,6 @@ export function AuthPage() {
         <Card className="bg-gray-900/50 border-0 p-6">
           <div className="space-y-6">
             <div className="space-y-4">
-             
               <div className="space-y-2">
                 <p className="text-sm text-gray-400">Have a referral code?</p>
                 <input
