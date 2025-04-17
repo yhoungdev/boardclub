@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { supabase } from "@/config/supabase";
 import { MenuIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Briefcase, Wallet, LineChart } from "lucide-react"; 
+import { Briefcase, Wallet, LineChart } from "lucide-react";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 
 export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
@@ -100,17 +100,23 @@ export const LayoutHeader: FC<ILayoutHeaderProps> = ({ title }) => {
                       <div className="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg">
                         <Briefcase className="h-5 w-5" />
                         <span>Jobs</span>
-                        <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Coming Soon</span>
+                        <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
+                          Coming Soon
+                        </span>
                       </div>
                       <div className="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg">
                         <Wallet className="h-5 w-5" />
                         <span>Funding</span>
-                        <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Coming Soon</span>
+                        <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
+                          Coming Soon
+                        </span>
                       </div>
                       <div className="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg">
                         <LineChart className="h-5 w-5" />
                         <span>Sigmart</span>
-                        <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Coming Soon</span>
+                        <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
+                          Coming Soon
+                        </span>
                       </div>
                     </div>
                   </div>

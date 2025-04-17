@@ -3,18 +3,26 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Coins, Users, LineChart, Briefcase, DollarSign } from "lucide-react";
 import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { RECEIPIANTADDRESS } from "@/constant";
 import { sendPayment } from "@/lib/payment";
 import { TonConnectButton } from "@tonconnect/ui-react";
 import { supabase } from "@/config/supabase";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
+import React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { FaTelegram, FaTelegramPlane } from "react-icons/fa";
+
 const Benefits = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const hasPaid = usePaymentStatus();
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const handlePayment = async () => {
     if (!tonConnectUI || !wallet || !wallet.account) {
@@ -22,7 +30,10 @@ const Benefits = () => {
       return;
     }
 
-    if (process.env.NODE_ENV === "production" && wallet.account.chain !== "-239") {
+    if (
+      process.env.NODE_ENV === "production" &&
+      wallet.account.chain !== "-239"
+    ) {
       toast.error("Please switch to TON mainnet");
       return;
     }
@@ -52,7 +63,6 @@ const Benefits = () => {
     }
   };
 
-
   if (hasPaid) {
     return (
       <div className="min-h-screen bg-black text-white p-4">
@@ -60,9 +70,9 @@ const Benefits = () => {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent mb-4">
             Welcome to Kryptronite
           </h1>
-          <p className="text-gray-400">You have successfully joined our community!</p>
-
-        
+          <p className="text-gray-400">
+            You have successfully joined our community!
+          </p>
         </div>
       </div>
     );
@@ -96,6 +106,28 @@ const Benefits = () => {
     },
   ];
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [currentSlide]);
+
+  const nextSlide = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentSlide((prev) => (prev === benefits.length - 1 ? 0 : prev + 1));
+    setTimeout(() => setIsAnimating(false), 500);
+  };
+
+  const prevSlide = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentSlide((prev) => (prev === 0 ? benefits.length - 1 : prev - 1));
+    setTimeout(() => setIsAnimating(false), 500);
+  };
+
   return (
     <div className="min-h-screen bg-black text-white p-4">
       <div className="max-w-4xl mx-auto">
@@ -106,17 +138,87 @@ const Benefits = () => {
           <p className="text-gray-400">Join with just 1 TON</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
-          {benefits.map((benefit, index) => (
-            <Card key={index} className="bg-gray-900/50 border-0 p-6">
-              <div className="flex items-center gap-4 mb-4">
-                {benefit.icon}
-                <h3 className="font-semibold text-white">{benefit.title}</h3>
+        <Card className="bg-gray-900/50 border-gray-800/50 p-6 relative overflow-hidden mb-12">
+          <div className="relative min-h-[250px]">
+            {benefits.map((benefit, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "absolute top-0 left-0 w-full transition-all duration-500 ease-in-out",
+                  {
+                    "translate-x-0 opacity-100": index === currentSlide,
+                    "translate-x-full opacity-0": index > currentSlide,
+                    "-translate-x-full opacity-0": index < currentSlide,
+                  },
+                )}
+              >
+                
+                <div className="text-center space-y-4">
+                  <div className="p-3 rounded-full bg-purple-500/10 inline-block">
+                    {React.cloneElement(benefit.icon, {
+                      className: "w-12 h-12 text-purple-400",
+                    })}
+                  </div>
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-gray-400 text-sm leading-relaxed max-w-lg mx-auto">
+                    {benefit.description}
+                  </p>
+                </div>
               </div>
-              <p className="text-gray-400 text-sm">{benefit.description}</p>
-            </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+            
+          <div className="mt-2 text-center">
+          
+            <a 
+              href="https://t.me/Kryptronite_chat" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 text-purple-400 hover:text-purple-300 transition-all duration-300 border border-purple-500/20 hover:border-purple-500/30"
+            >
+         
+              Join our community
+            </a>
+          </div>
+       
+          <div className="flex justify-between items-center mt-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={prevSlide}
+              className="text-gray-400 hover:text-white transition-colors"
+              disabled={isAnimating}
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+            <div className="flex gap-2">
+              {benefits.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={cn(
+                    "h-2 w-2 rounded-full transition-all duration-300",
+                    currentSlide === index
+                      ? "bg-purple-400 w-4"
+                      : "bg-gray-600 hover:bg-gray-500",
+                  )}
+                />
+              ))}
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={nextSlide}
+              className="text-gray-400 hover:text-white transition-colors"
+              disabled={isAnimating}
+            >
+              <ChevronRight className="h-6 w-6" />
+            </Button>
+          </div>
+        </Card>
 
         <div className="text-center space-y-6">
           <div className="flex justify-center">

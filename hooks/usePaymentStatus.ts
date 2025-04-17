@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { supabase } from "@/config/supabase";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
 
@@ -12,11 +12,11 @@ export const usePaymentStatus = () => {
       if (!user) return;
 
       const { data } = await supabase
-        .from('users')
-        .select('has_paid')
-        .eq('telegram_id', user.id.toString())
+        .from("users")
+        .select("has_paid")
+        .eq("telegram_id", user.id.toString())
         .single();
-      
+
       setHasPaid(data?.has_paid || false);
     };
 
