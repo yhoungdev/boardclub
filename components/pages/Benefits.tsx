@@ -80,7 +80,7 @@ const Benefits = () => {
     }
   };
 
-  if (!hasPaid) {
+  if (hasPaid) {
     return (
       <div className="min-h-screen mt-[4em] bg-black text-white p-4">
         <div className="max-w-4xl mx-auto text-center">

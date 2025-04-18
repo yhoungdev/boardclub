@@ -5,8 +5,7 @@ const CountDown = () => {
 
 
   return (
-   <div className="h-[90vh] flex flex-col
-    items-center">
+   <div className="">
     <Benefits />
    </div>
   );
