@@ -13,7 +13,6 @@ import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FaTelegram, FaTelegramPlane } from "react-icons/fa";
 
 const Benefits = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -23,6 +22,24 @@ const Benefits = () => {
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 20);
+
+    const timer = setInterval(() => {
+      const now = new Date();
+      const difference = endDate.getTime() - now.getTime();
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+      setTimeLeft(`${days}d ${hours}h`);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const handlePayment = async () => {
     if (!tonConnectUI || !wallet || !wallet.account) {
@@ -63,16 +80,30 @@ const Benefits = () => {
     }
   };
 
-  if (hasPaid) {
+  if (!hasPaid) {
     return (
-      <div className="min-h-screen bg-black text-white p-4">
+      <div className="min-h-screen mt-[4em] bg-black text-white p-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent mb-4">
             Welcome to Kryptronite
           </h1>
-          <p className="text-gray-400">
+          <p className="text-gray-400 mb-2">
             You have successfully joined our community!
           </p>
+          <p className="text-purple-400 font-semibold mb-6">
+            {timeLeft} remaining
+          </p>
+          <div className="flex flex-col items-center gap-2">
+            <a 
+              href="https://t.me/Kryptronite_chat" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 text-purple-400 hover:text-purple-300 transition-all duration-300 border border-purple-500/20 hover:border-purple-500/30"
+            >
+              Join our Telegram 
+            </a>
+            <span className="text-gray-400 text-sm">chat for more enquiries</span>
+          </div>
         </div>
       </div>
     );
@@ -175,7 +206,7 @@ const Benefits = () => {
             <a 
               href="https://t.me/Kryptronite_chat" 
               target="_blank" 
-              rel="noopener noreferrer"
+              
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 text-purple-400 hover:text-purple-300 transition-all duration-300 border border-purple-500/20 hover:border-purple-500/30"
             >
          
